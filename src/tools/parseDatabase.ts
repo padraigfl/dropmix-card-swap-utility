@@ -44,8 +44,13 @@ const getBytesToFill = (index: number) => {
   return 0;
 }
 
-const getDatabaseEndPoint = (db: Uint8Array, startIndex: number): DBData => {
-  let currentRowIndex = startIndex + cardDataHeader.length + getBytesToFill(cardDataHeader.length);
+// Android version of db has a newline character at the end of each entry, making them all one character longer
+const getCardHeaderLength = (db: Uint8Array, startIndex: number) => new Uint32Array(db.slice(startIndex - 4, startIndex).buffer)[0];
+
+const getDatabase = (db: Uint8Array, startIndex: number): DBData => {
+  const fullHeaderLength = getCardHeaderLength(db, startIndex);
+  let currentRowIndex = startIndex + fullHeaderLength;
+  currentRowIndex = getBytesToFill(currentRowIndex);
   const entryList = [];
   while (entryList.length < 440) {
     const newEntry = processRow(db, currentRowIndex);
@@ -64,6 +69,6 @@ const getDatabaseEndPoint = (db: Uint8Array, startIndex: number): DBData => {
 
 export const databaseParser = (db: Uint8Array) => {
   const headerStartIndex = db.findIndex((entry, idx) => getDatabaseStartingPoint(db, idx));
-  getDatabaseEndPoint(db, headerStartIndex);
-  return headerStartIndex;
+  const database = getDatabase(db, headerStartIndex);
+  return database;
 }

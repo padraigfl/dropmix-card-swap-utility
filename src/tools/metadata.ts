@@ -15,8 +15,7 @@ const prevIdRegex = new RegExp(
 
 // get previous ID from data string
 export const getPrevId = (dataString: string) => {
-  const prevId = dataString.match(prevIdRegex)?.[0];
-  return prevId;
+  return dataString.match(prevIdRegex)?.[0];
 }
 
 export const addOldIdToString = (copyright: string, oldId: string, rowLengthAdjuster = 0) => {
