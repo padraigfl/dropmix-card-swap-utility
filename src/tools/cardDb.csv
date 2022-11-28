@@ -1,3 +1,4 @@
+CID,Source CID,CTI,Item ID,Item Type,Power,Deck ID,Series Icon,Series Index,Series Count,Season,ArtistRef,SongRef,TypeRef,GenreRef,Print ID,
 s02_c228_i16_heartofglass_lead,LIC_0174_Lead,22,i16,Playlist,3,16,fantastic,3,15,2,Blondie,Heart Of Glass,Lead,genre_rock,S02 C228,
 s02_c028_i02_allidoiswin_bass,LIC_0023_Bass,189,i02,Playlist,3,2,energy,13,15,2,DJ Khaled,All I Do Is Win (ft. T-Pain),Bass,genre_hiphop,S02 C028,
 s01_c089_i03_layitdown_fx,FX_0025,210,i03,Playlist,2,6,mirrors,14,15,1,Lay It Down,fx_action_loop,FX,genre_fx,S01 C089,
@@ -433,8 +434,8 @@ s01_c278_i16_bringmetolife_beat,LIC_0062_Beat,64760,i16,Discovery,1,19,socket,8,
 s02_c057_i04_hideaway_bass,LIC_0070_Bass,65047,i04,Playlist,2,4,flora,12,15,2,Kiesza,Hideaway,Bass,genre_electronic,S02 C057,
 s01_c085_i03_mainmistarpraimhoon_beat,HMX_0003_Beat,65176,i03,Playlist,2,6,mirrors,10,15,1,Dillzan Madan,Main Mistar Praim Hoon (I Am Mister Prime),Beat,genre_pop genre_soundtrack,S01 C085,
 s02_c044_i03_underground_fx,FX_0055,65260,i03,Playlist,2,3,city,14,15,2,Underground,fx_clear_adjacent,FX,genre_fx,S02 C044,
-s01_c226_i13_bustamove_wild,LIC_0134_Wild,65315,i13,Discovery,2,16,puff,1,15,1,Young M.C.,Bust A Move,Wild,genre_hiphop,S01 C226
-p01_c001_i01_maintitlesong_wild,LIC_0031_Wild,49600,i01,Promo,2,1,promo,1,,0,The Transformers,Main Title Song,Wild,genre_danceelec genre_soundtrack,P01 C001
-p01_c002_i01_flutterfly_wild,LIC_0185_Wild,64311,i01,Promo,2,1,promo,2,,0,Darren Korb,Flutter Fly (from the Pyre Original Soundtrack),Wild,genre_soundtrack,P01 C002
-p01_c003_i01_maintitlethemeremix_wild,LIC_0187_Wild,58017,i01,Promo,2,1,promo,3,,0,G.I. Joe,Main Title Theme (Remix),Wild,genre_danceelec genre_soundtrack,P01 C003
-p01_c004_i01_powerrangers_wild,LIC_0188_Wild,17592,i01,Promo,2,1,promo,4,,0,Mighty Morphin Power Rangers,Main Title Theme,Wild,genre_rock genre_soundtrack,P01 C004
+s01_c226_i13_bustamove_wild,LIC_0134_Wild,65315,i13,Discovery,2,16,puff,1,15,1,Young M.C.,Bust A Move,Wild,genre_hiphop,S01 C226,
+p01_c001_i01_maintitlesong_wild,LIC_0031_Wild,49600,i01,Promo,2,1,promo,1,,0,The Transformers,Main Title Song,Wild,genre_danceelec genre_soundtrack,P01 C001,
+p01_c002_i01_flutterfly_wild,LIC_0185_Wild,64311,i01,Promo,2,1,promo,2,,0,Darren Korb,Flutter Fly (from the Pyre Original Soundtrack),Wild,genre_soundtrack,P01 C002,
+p01_c003_i01_maintitlethemeremix_wild,LIC_0187_Wild,58017,i01,Promo,2,1,promo,3,,0,G.I. Joe,Main Title Theme (Remix),Wild,genre_danceelec genre_soundtrack,P01 C003,
+p01_c004_i01_powerrangers_wild,LIC_0188_Wild,17592,i01,Promo,2,1,promo,4,,0,Mighty Morphin Power Rangers,Main Title Theme,Wild,genre_rock genre_soundtrack,P01 C004,

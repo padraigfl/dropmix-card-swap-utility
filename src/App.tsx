@@ -2,6 +2,8 @@ import React, { useCallback } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { databaseParser } from './tools/parseDatabase';
+import CardList from './CardList';
+import PlaylistList from './PlaylistList';
 
 function App() {
 
@@ -32,6 +34,7 @@ function App() {
           Learn React
         </a>
         <input type="file" onChange={handleFile} />
+        <PlaylistList />
       </header>
     </div>
   );

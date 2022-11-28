@@ -19,7 +19,6 @@ const getDatabaseStartingPoint = (db: Uint8Array, index: number) => {
     return false;
   }
   const assumedHeader = db.slice(index, index + cardDataHeader.length);
-  console.log(assumedHeader.length);
   return assumedHeader.every((entry, idx) => {
     return entry === cardDataHeader[idx];
   });
@@ -30,6 +29,7 @@ const processRow = (db: Uint8Array, rowStartIndex: number) => {
   let rowString = '';
   new Uint8Array(db.slice(rowStartIndex+4, rowStartIndex + 4 + rowLength).buffer)
     .forEach(v => rowString += String.fromCharCode(v))
+  console.log('idx', rowStartIndex, 'length', rowLength, 'id', rowString.split(',')[0].replace(/.*"(.*)".*/, '$1'), 'data', rowString.length < 500 ? rowString : 'too long');
   return {
     requiredLength: rowLength,
     id: rowString.split(',')[0].replace(/.*"(.*)".*/, '$1'),
@@ -45,19 +45,22 @@ const getBytesToFill = (index: number) => {
 }
 
 // Android version of db has a newline character at the end of each entry, making them all one character longer
-const getCardHeaderLength = (db: Uint8Array, startIndex: number) => new Uint32Array(db.slice(startIndex - 4, startIndex).buffer)[0];
+const getCardHeaderLength = (db: Uint8Array, startIndex: number) => new Uint32Array(db.slice(startIndex, startIndex + 4).buffer)[0];
 
 const getDatabase = (db: Uint8Array, startIndex: number): DBData => {
   const fullHeaderLength = getCardHeaderLength(db, startIndex);
-  let currentRowIndex = startIndex + fullHeaderLength;
-  currentRowIndex = getBytesToFill(currentRowIndex);
+  let currentRowIndex = startIndex + fullHeaderLength + 4;
+  currentRowIndex += getBytesToFill(currentRowIndex);
+  console.log(startIndex, currentRowIndex);
   const entryList = [];
   while (entryList.length < 440) {
     const newEntry = processRow(db, currentRowIndex);
     entryList.push(newEntry);
-
+    if (Number.isNaN(currentRowIndex)) {
+      throw Error('aaaa')
+    }
     // prior index + 32bit count for new row + row length + byte balance
-    currentRowIndex += newEntry.requiredLength + 4
+    currentRowIndex += ((newEntry.requiredLength) + 4)
     currentRowIndex += (getBytesToFill(currentRowIndex))
   }
   return {
@@ -68,7 +71,8 @@ const getDatabase = (db: Uint8Array, startIndex: number): DBData => {
 }
 
 export const databaseParser = (db: Uint8Array) => {
-  const headerStartIndex = db.findIndex((entry, idx) => getDatabaseStartingPoint(db, idx));
+  const headerStartIndex = db.findIndex((entry, idx) => getDatabaseStartingPoint(db, idx)) - 4;
+  console.log('start: ', headerStartIndex);
   const database = getDatabase(db, headerStartIndex);
   return database;
 }
