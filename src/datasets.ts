@@ -19,7 +19,8 @@ export type CardExpanded = Card & {
   // Instrument: [string] | [string, string, string, string]
 }
 
-export interface Playlist {
+export type Playlist = CardKey[];
+export interface Playlists {
   [k: typeof cardDb[CardKey]['Series Icon']]: CardKey[]; 
 }
 
@@ -31,7 +32,7 @@ export const playlists = Object.entries(cardDb).reduce((playlists, [id, currentC
     playlists[playlistName] = [id as CardKey];
   }
   return playlists;
-}, {} as Playlist);
+}, {} as Playlists);
 
 export const VALID_PLAYLIST_SIZE = 15;
 
