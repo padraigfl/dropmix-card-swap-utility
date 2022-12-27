@@ -24,3 +24,11 @@
 - [] Extract level0 file from apk
 - [] Extract full apk, modify level0 and rebuild
 - [] Sign new APK
+
+
+
+## Stages
+
+- [] Create card collection - (owned, want, disposable)
+- [] Tabs for each (reduce length of select list)
+- [] Playlist swap screen
