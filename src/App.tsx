@@ -1,12 +1,12 @@
 import { GameDatasetContextProvider } from './GameDataset/GameDatasetContext';
-import { CardOwnershipWrapper } from './Ownership/CardOwnership';
 import './App.css';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
     <div className="App">
       <GameDatasetContextProvider>
-        <CardOwnershipWrapper />
+        <Outlet />
       </GameDatasetContextProvider>
       <div id="modalPortal"></div>
     </div>

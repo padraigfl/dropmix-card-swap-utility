@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useState } from 'react';
 import cardDb from './cardDb.json';
 
 
-const getCardFilters = () => {
+export const getCardFilters = () => {
   const filters = {
     "Item Type": new Set<string>(),
     "Power": new Set<number>(),
@@ -27,11 +27,11 @@ const getCardFilters = () => {
     return {
       ...acc,
       [k]: Array.from<string | number>(v),
-    }
-  }, {});
+    } 
+  }, {} as { [k: string ]: any[] });
 }
 
-const filters = getCardFilters();
+export const filters = getCardFilters();
 const defaultFilters = Object.entries(filters).reduce((acc, [k, v]) => ({ ...acc, [k]: []}), {})
 
 const CardDbContext = createContext({} as any);
@@ -40,28 +40,28 @@ const CardDbContext = createContext({} as any);
 type cardIndex = keyof typeof cardDb;
 type filterKey = keyof typeof filters;
 
-const useCardDbContext = () => {
+export const useCardDbContext = () => {
   const context = useContext(CardDbContext);
   const [appliedFilter, setFilter] = useState<{ [cardId in keyof typeof filters]?: (typeof filters[cardId])[] }>(defaultFilters);
 
   const [swapList, setSwapList] = useState<{ [card in cardIndex]?: cardIndex}>({});
 
-  const updateFilter = useCallback((updatedKey: filterKey, value: keyof typeof filters[filterKey][]) => {
-    // setFilter(oldFilters => {
-    //   const oldFilter = oldFilters[updatedKey];
-    //   if (!oldFilter) {
-    //     throw Error(`BROKEN`);
-    //   }
-    //   return {
-    //     ...oldFilters,
-    //     [updatedKey]: oldFilter[updatedKey].includes(value[0])
-    //       ? oldFilter[updatedKey].filter(v => v.includes(value[0]))
-    //       : [
-    //         ...oldFilter[updatedKey],
-    //         ...value,
-    //       ]
-    //   }
-    // });
+  const updateFilter = useCallback((updatedKey: filterKey, value: typeof filters[filterKey][]) => {
+    setFilter(oldFilters => {
+      const oldFilter = oldFilters[updatedKey];
+      if (!oldFilter) {
+        throw Error(`BROKEN`);
+      }
+      return {
+        ...oldFilters,
+        [updatedKey]: oldFilter.includes(value[0])
+          ? oldFilter.filter(v => v !== value[0])
+          : [
+            ...oldFilter,
+            ...value,
+          ]
+      }
+    });
   }, []);
 
   return {

@@ -58,7 +58,7 @@ export const CardSwap = (props: { card: Card, disabled: boolean }) => {
         -----
       </option>
       {(Object.entries(collection) as [CardKey, CardCollectionValues][])
-        .filter(([key, card]) => stage === 'dispose' ? card.want : card.dispose)
+        .filter(([key, card]) => stage === 'want' ? card.dispose : card.want)
         .map(([id]) => {
           return (
             <option value={id} disabled={!!swapped[id]}>

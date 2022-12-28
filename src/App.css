@@ -1,9 +1,57 @@
-.dialog {
+body {
+  --dark: #444;
+
+  --ms: 4px;
+}
+
+.overlay {
   position: absolute;
   top: 0px;
   left: 0px;
   width: 100vw;
   height: 100vh;
   background-color: rgba(255, 255, 255, 0.8);
-  filter: drop-shadow(0.5)
+  filter: drop-shadow(0.5);
+  display: flex;
+  align-content: center;
 }
+
+.dialog {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.dialog__close {
+  float: right;
+}
+
+table {
+  border-spacing: 0px;
+  width: 100%;
+  overflow-y: auto;
+  font-variant: numeric;
+}
+table thead {
+  position: sticky;
+  top: 0px;
+  background-color: white;
+}
+td, th {
+  border: 1px solid var(--dark);
+  margin: var(--ms);
+  height: 40px;
+  z-index: 1;
+  text-align: left;
+}
+td .img {
+  max-height: 80px;
+  transition: all linear 200ms;
+  margin: 0 auto;
+}
+td .img--large {
+  display: none;
+}
+td:hover .img--large {
+  z-index: 10;
+  position: absolute;
+  display: block;
+}
+

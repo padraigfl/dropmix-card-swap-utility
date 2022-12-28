@@ -32,3 +32,4 @@
 - [] Create card collection - (owned, want, disposable)
 - [] Tabs for each (reduce length of select list)
 - [] Playlist swap screen
+- [] Fix Robin Thicke data

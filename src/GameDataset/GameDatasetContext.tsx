@@ -1,4 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useNavigate, useNavigation } from "react-router";
+import { DialogControl } from "../components";
 import { CardKey } from "../datasets";
 import { getMinifiedSwap, Swapped } from "../Swap/SwapContext";
 import { changeCardRelation } from "../tools/modifiers";
@@ -21,6 +23,7 @@ const useGameDatasetValues = () => {
   const [cardDb, setCardDb] = useState<DBData | null>(null);
   const [cardDbRaw, setCardDbRaw] = useState<Uint8Array | null>(null);
   const [filename, setFilename] = useState('')
+  // const navigate = useNavigate()
 
   useEffect(() => {
     if (cardDbRaw) {
@@ -65,13 +68,18 @@ const useGameDatasetValues = () => {
     newLevel0.set(newRawData, cardDb?.startIndex)
     const blob = new Blob([newLevel0]);
     const aElement = window.document.createElement('a');
-    aElement.setAttribute('download', `${filename}.custom${Date.now()}`);
+    const savedFilename = `${filename}.custom${Date.now()}`;
+    aElement.setAttribute('download', savedFilename);
     const href = URL.createObjectURL(blob);
     aElement.href = href;
     aElement.setAttribute('target', '_blank');
     aElement.click();
     URL.revokeObjectURL(href);
     aElement.remove();
+    if (window.confirm(`Updated DB saved to ${savedFilename}; follow instructions to update; click confirm to view instructions for updating app`)){
+      // navigate('/guide#level0');
+      window.location.href = '/guide#level0';
+    }
   }, [cardDb, cardDbRaw, filename]);
 
   return useMemo(() => ({

@@ -4,9 +4,11 @@ import { createPortal } from "react-dom";
 
 const Dialog = (props: { children: ReactNode, onClose: () => void }) => {
   return createPortal(
-    <div className="dialog">
-      <button onClick={props.onClose}>Close</button>
-      { props.children }
+    <div className="overlay">
+      <div className="dialog">
+        <button onClick={props.onClose}>Close</button>
+        { props.children }
+      </div>
     </div>,
     document.getElementById('modalPortal')!
   )
@@ -16,10 +18,16 @@ interface DialogProps {
   children: (setOpen: any) => ReactNode;
   buttonText?: string;
   buttonElement?: ReactElement | string;
+  initialOpenState?: boolean;
+  noOpenButton?: boolean;
 }
 
 export const DialogControl = (props: DialogProps) => {
   const [isOpen, setOpen] = useState(false);
+
+  if (!props.initialOpenState && props.noOpenButton) {
+    throw new Error('Dialog will not function with no open button and closed initially')
+  }
 
   return (
     <>

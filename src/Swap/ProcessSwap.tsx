@@ -16,6 +16,18 @@ export const ProcessSwap = () => {
     <DialogControl buttonText={`Download Swap ${swapCount ? `(${swapCount})` : ''}`}>
       {onClose => (
         <>
+          <button onClick={() => {
+            if (!downloadUpdatedDatabase) {
+              alert('please select/upload a raw data set to complete swap process')
+            }
+            try {
+              downloadUpdatedDatabase?.(swapped);
+            } catch (e) {
+              console.error(e);
+            } finally {
+              onClose();
+            }
+          }}>Download Swapped DB</button>
           <table>
             <thead>
               {infoColumns.map(v => <th>{v.name}</th>)}
@@ -33,18 +45,6 @@ export const ProcessSwap = () => {
               )})}
             </tbody>
           </table>
-          <button onClick={() => {
-            if (!downloadUpdatedDatabase) {
-              alert('please select/upload a raw data set to complete swap process')
-            }
-            try {
-              downloadUpdatedDatabase?.(swapped);
-            } catch (e) {
-              console.error(e);
-            } finally {
-              onClose();
-            }
-          }}>Download Swapped DB</button>
         </>
       )}
     </DialogControl>

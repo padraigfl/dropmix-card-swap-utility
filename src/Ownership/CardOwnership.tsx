@@ -1,11 +1,9 @@
-import { CollectionContextProvider, CollectionStage, collectStages, useCollectionContext } from "./CollectionContext"
+import { CollectionContextProvider, CollectionStage, collectStages, getCollection, useCollectionContext } from "./CollectionContext"
 import { v4 as uuidv4 } from "uuid";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import CardList from "./CardList";
 import { CardKey } from "../datasets";
-import { useGameDatasetContext } from "../GameDataset/GameDatasetContext";
 import { SwapContextProvider, useSwapContext } from "../Swap/SwapContext";
-import { DialogControl } from "../components";
 import { ProcessSwap } from "../Swap/ProcessSwap";
 
 
@@ -69,14 +67,72 @@ const CardOwnership = () => {
   )
 }
 
+
+const getCollections = () => {
+  return JSON.parse(window.localStorage.getItem('collections') || '[]') as string[]
+}
+
+const saveCollectionList = (collectionId: string) => {
+  const collections = new Set<string>(getCollections());
+  collections.add(collectionId);
+  const array = Array.from(collections)
+  window.localStorage.setItem('collections', JSON.stringify(array));
+  return array;
+}
+
 export const CardOwnershipWrapper = () => {
-  const [collectionId] = useState(uuidv4);
+  
+  const [collectionIds, setCollectionIds] = useState<string[]>(getCollections())
+  const [collectionId, setCollectionId] = useState(collectionIds[collectionIds.length - 1]);
+
+  useEffect(() => {
+    if (!collectionId) {
+      setCollectionId(uuidv4());
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedCollections = getCollections();
+    const newCollections = collectionIds.filter(c => !savedCollections.includes(c));
+    if (newCollections.length) {
+      newCollections.forEach(c => saveCollectionList(c));
+      setCollectionIds([...savedCollections, ...newCollections]);
+    }
+  }, [collectionIds]);
+
+  useEffect(() => {
+    const newlyCreatedCollections = !collectionIds.includes(collectionId)
+    if (newlyCreatedCollections) {
+      setCollectionIds(prev => [...prev, collectionId]);
+    }
+  }, [collectionId, collectionIds]);
+
   return (
-    <CollectionContextProvider collectionId={collectionId}>
-      <SwapContextProvider>
-        <CardOwnership />
-      </SwapContextProvider>
-    </CollectionContextProvider>
+    <>
+      <select value={collectionId} onChange={e => {
+        if (collectionIds.includes(e.target.value) || window.confirm('create new collection')) {
+          setCollectionId(e.target.value)
+        }
+      }}>
+        {collectionIds.map(c => {
+          const collection = getCollection(c);
+          return (
+            <option value={c} disabled={c === collectionId}>{new Date(collection.savedTime! || 0).toISOString()}</option>
+          )
+        })}
+      </select>
+      <button
+        onClick={() => {
+          window.confirm('create new collection') && setCollectionId(uuidv4())
+        }}>New Collection</button>
+      <button>Delete Collection</button>
+     
+      <CollectionContextProvider collectionId={collectionId}>
+        <SwapContextProvider>
+          <CardOwnership />
+        </SwapContextProvider>
+      </CollectionContextProvider>
+    </>
   );
 }
 

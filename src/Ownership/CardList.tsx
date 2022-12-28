@@ -5,6 +5,7 @@ import { cardIndexesArray } from '../tools/variables';
 import { useSwapContext } from '../Swap/SwapContext';
 import cardDb from '../cardDb.json';
 import { CardSwap } from '../Swap/CardSwap';
+import { filters, useCardDbContext } from '../CardDbContext';
 
 export type ListProps = {
   action: CollectionStage,
@@ -16,13 +17,14 @@ type Columns = {
   key: keyof Card;
   name?: string;
   filter?: (k: any) => (card: Card) => boolean;
-  sort?: (a: Card, b: Card) => 1 | -1 | 0
+  sort?: (a: Card, b: Card) => 1 | -1 | 0;
+  short?: number;
 }
 
 const filterFields: Columns[] = [
-  { key: 'Power', filter: (k: number) => card => card.Power === k },
-  { key: 'TypeRef', name: 'Type' },
-  { key: 'Season' },
+  { key: 'Power', filter: (k: number) => card => card.Power === k, short: 3 },
+  { key: 'TypeRef', name: 'Type', short: 4 },
+  { key: 'Season', short: 3 },
   { key: 'Series Icon', name: 'Playlist' },
   { key: 'GenreRef', name: 'Genre', filter: (k: Card['GenreRef']) => card => `${card.GenreRef}`.includes(`${k}`) },
   // { key: 'Instrument', name: 'Instrument', filter: (k: Instrument) => card => [instrument 1 to 4].includes(instrument)}
@@ -31,6 +33,7 @@ const filterFields: Columns[] = [
 const StageActions = () => {
   const { stage, collection, updateCollection } = useCollectionContext();
   const toggleRef = useRef<HTMLInputElement | null>()
+  const { appliedFilter } = useCardDbContext();
 
   const checkedStatus = useMemo(() => {
     return Object.entries(collection).reduce((acc, [k, v]) => {
@@ -65,6 +68,17 @@ const StageActions = () => {
     Object.keys(collection).forEach(k => {
       const card = collection[k as CardKey]
       const cardVal = card?.[stage]
+
+      const isFiltered = Object.keys(appliedFilter).some(f => {
+        const cardTypeFromFitler = cardDb[k as CardKey][f as keyof Card];
+        if (!appliedFilter[f]?.length || appliedFilter[f]?.includes(cardTypeFromFitler as any)) {
+          return false;
+        }
+        return true;
+      })
+      if (isFiltered) {
+        return;
+      }
       if (typeof cardVal !== 'boolean' ) {
         console.error('only booleans should be here')
       } else if (cardVal && !toggleAction) {
@@ -74,7 +88,7 @@ const StageActions = () => {
         updateCollection(k as CardKey, stage, toggleAction)
       }
     });
-  }, [checkedStatus, stage, collection, updateCollection]);
+  }, [checkedStatus, stage, collection, updateCollection, appliedFilter]);
 
   return (
     <label htmlFor="toggleAll">
@@ -91,12 +105,16 @@ const StageActions = () => {
 
 export const infoColumns: {
   name: string;
-  render: (k: CardKey) => (ReactNode | string)
+  render: (k: CardKey) => (ReactNode | string);
 }[] = [
   {
     name: 'Image',
     render: k => (
-      <img loading="lazy" src={`/assets/images/100-card_${k}.png`} alt={`artwork for ${cardDb[k].SongRef}`} height={100}/>
+      <>
+        <img loading="lazy" className="img" src={`/assets/images/100-card_${k}.png`} alt={`artwork for ${cardDb[k].SongRef}`} />
+        <img loading="lazy" className="img--large" src={`/assets/images/240-card_${k}.png`}  alt={`artwork for ${cardDb[k].SongRef}`} />
+      </>
+      
     )
   },
   { name: 'Artist', render: k => cardDb[k].ArtistRef },
@@ -104,6 +122,7 @@ export const infoColumns: {
 ]
 
 const CardList = (props: ListProps) => {
+  const { appliedFilter, updateFilter } = useCardDbContext();
   // useEffect(() => {
   //   window.fetch('/assets/cardDb.json')
   //     .then(res => res.json())
@@ -145,23 +164,37 @@ const CardList = (props: ListProps) => {
     })
   }, [])
   return (
+    <>
+    { filters.TypeRef.map(f => {
+      const nameFor = `filter-typeRef-${f}`
+      return (
+        <>| 
+          <label htmlFor={nameFor}>{f}</label>
+          <input type="checkbox" name={nameFor} checked={appliedFilter.TypeRef?.includes(f)} onChange={() => updateFilter('TypeRef', [f])} />
+        </>
+      );
+    }
+    )}
     <table>
       <thead>
         <tr>
           { infoColumns.map(v => <th>{v.name}</th>)}
-          { filteredColumns.map(v => <th>{v.name || v.key}</th>)}
+          { filteredColumns.map(v => <th className={`filter ${v.short ? 'filter--short' : ''}`}>{(v.name || v.key).substring(0, v.short || Infinity)}</th>)}
           <th>{
             stage === 'own'
               ? <StageActions />
               : stage
             }</th>
-          { canSwap && stage !== 'own' && <th>Swap</th>}
+          { canSwap && <th>Swap</th>}
         </tr>
       </thead>
       <tbody>
         { filteredCards.map((cardKey) => {
             const cardData = cardDb[cardKey];
             const inputName = `checkbox_${cardKey}`;
+            if (appliedFilter.TypeRef?.length && appliedFilter.TypeRef?.includes(cardData.TypeRef as any)) {
+              return null;
+            }
             if (!cardData) {
               return null;
             }
@@ -173,7 +206,7 @@ const CardList = (props: ListProps) => {
                   </td>
                 ))}
                 { filteredColumns.map(c => (
-                  <td>{cardDb[cardKey][c.key]}</td>
+                  <td className={`filter $`}>{cardDb[cardKey][c.key]}</td>
                 ))}
                 <td>
                   <input
@@ -197,6 +230,7 @@ const CardList = (props: ListProps) => {
         }
       </tbody>
     </table>
+    </>
   )
 }
 

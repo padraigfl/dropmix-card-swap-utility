@@ -25,6 +25,11 @@ export type CardCollection = {
   [k in CardKey]?: OwnedCard | UnownCard;
 }
 
+type CardCollectionData = {
+  savedTime?: number;
+  collection: CardCollection;
+}
+
 interface CollectionContextType {
   stage: CollectionStage;
   setStage: (s: CollectionStage) => void;
@@ -36,29 +41,32 @@ interface CollectionContextType {
 
 export const CollectionContext = createContext<CollectionContextType>({ id: uuidv4(), collection: {} } as CollectionContextType);
 
-const getInitialCollection = (collectionId?: string) => {
+export const getCollection = (collectionId?: string): CardCollectionData => {
   if (collectionId) {
     const existing = window.localStorage.getItem(`card-${collectionId}`);
     if (existing) {
       return JSON.parse(existing);
     }
   }
-  return (
-    Object.keys(cardDb).reduce(
-      (acc, k) => ({ ...acc, [k]: { own: false, want: false, swapee: false }}),
-      {},
-    )
-  )
+  return {
+    collection: (
+      Object.keys(cardDb).reduce(
+        (acc, k) => ({ ...acc, [k]: { own: false, want: false, swapee: false }}),
+        {},
+      )
+    ),
+    savedTime: Date.now(),
+  }
 }
 
 const saveCollection = (collectionId: string, collection: CardCollection) => {
-  window.localStorage.setItem(`card-${collectionId}`, JSON.stringify(collection));
+  const savedTime = Date.now();
+  window.localStorage.setItem(`card-${collectionId}`, JSON.stringify({ collection, savedTime }));
 }
-
 
 export const useCollectionValues = (collectionId: string) => {
   const [collection, setCollection] = useState<CardCollection>(
-    getInitialCollection(collectionId)
+    getCollection(collectionId).collection
   );
   const [stage, setStage] = useState<CollectionStage>('own');
   const original = useRef(window.localStorage.getItem(`card-${collectionId}`) ? collection : null);
@@ -92,8 +100,8 @@ export const useCollectionValues = (collectionId: string) => {
   }, []);
 
   useEffect(() => {
-    const newCollection = getInitialCollection(collectionId)
-    setCollection(getInitialCollection(collectionId));
+    const newCollection = getCollection(collectionId).collection
+    setCollection(newCollection);
     original.current = window.localStorage.getItem(`card-${collectionId}`) ? newCollection : null
   }, [collectionId, original]);
 
@@ -117,7 +125,7 @@ export const useCollectionValues = (collectionId: string) => {
     undoChanges,
     stage,
     setStage,
-    id: collectionId
+    id: collectionId,
   }), [stage, collection, undoChanges, updateCollection, collectionId])
 };
 
