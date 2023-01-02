@@ -16,22 +16,27 @@ export type ListProps = {
 type Columns = {
   key: keyof Card;
   name?: string;
-  filter?: (k: any) => (card: Card) => boolean;
+  filter?: (card: Card, predicate: any) => boolean;
   sort?: (a: Card, b: Card) => 1 | -1 | 0;
   short?: number;
 }
 
 const filterFields: Columns[] = [
-  { key: 'Power', filter: (k: number) => card => card.Power === k, short: 3 },
-  { key: 'TypeRef', name: 'Type', short: 4 },
+  { key: 'Power', filter: (card: Card, k: number) => card.Power === k, short: 3 },
+  { key: 'TypeRef', name: 'Type', short: 4, filter: (card: Card, k: string) => card.TypeRef === k},
   { key: 'Season', short: 3 },
+  { key: 'Item Type', name: 'Grouping' },
   { key: 'Series Icon', name: 'Playlist' },
-  { key: 'GenreRef', name: 'Genre', filter: (k: Card['GenreRef']) => card => `${card.GenreRef}`.includes(`${k}`) },
+  { key: 'GenreRef', name: 'Genre', filter: (card: Card, genre: string) => {
+    return `${card['GenreRef']}`.includes(`genre_${genre}`)
+  }, },
+  { key: 'CID', name: 'Music', filter: (card: Card, prefix: string) => { debugger; return card['Source CID'].includes(prefix) }}
   // { key: 'Instrument', name: 'Instrument', filter: (k: Instrument) => card => [instrument 1 to 4].includes(instrument)}
 ]
 
-const StageActions = () => {
-  const { stage, collection, updateCollection } = useCollectionContext();
+const ToggleAll = (props: { stage: CollectionStage }) => {
+  const { collection, updateCollection } = useCollectionContext();
+  const { stage } = props;
   const toggleRef = useRef<HTMLInputElement | null>()
   const { appliedFilter } = useCardDbContext();
 
@@ -56,6 +61,19 @@ const StageActions = () => {
       }
     }
   }, [checkedStatus])
+
+  const toggleAllDisabled = useMemo(() => Object.values(collection).every(v => {
+    if (stage === 'dispose') {
+      return !v.own
+    }
+    if (stage === 'own') {
+      return !!v.want
+    }
+    if (stage === 'want') {
+      return !!v.own
+    }
+    throw Error("shouldn't get in here")
+  }), [collection, stage]);
 
   const toggleAll = useCallback(() => {
     const toggleAction = !checkedStatus.not.length ? false : true;
@@ -89,15 +107,16 @@ const StageActions = () => {
       }
     });
   }, [checkedStatus, stage, collection, updateCollection, appliedFilter]);
-
+  const toggleName = `toggleAll-${props.stage}`
   return (
-    <label htmlFor="toggleAll">
-      {stage}
+    <label htmlFor={toggleName}>
+      {props.stage }
       <input
         ref={r => { toggleRef.current = r }}
-        name="toggleAll"
+        name={toggleName}
         type="checkbox"
         onChange={toggleAll}
+        disabled={toggleAllDisabled}
       />
     </label>
   )
@@ -129,16 +148,8 @@ const CardList = (props: ListProps) => {
   //     .then(d => { debugger })
   // })
   const { swapped } = useSwapContext();
-  const { collection, stage } = useCollectionContext();
-  const filteredCards = useMemo(() => {
-    if (stage === 'dispose') {
-      return cardIndexesArray.filter(cardKey => collection[cardKey]?.own)
-    }
-    if (stage === 'want') {
-      return cardIndexesArray.filter(cardKey => !collection[cardKey]?.own)
-    }
-    return cardIndexesArray;
-  }, [stage, collection]);
+  const { collection } = useCollectionContext();
+
   const canSwap = useMemo(() => {
     const values = Object.values(collection);
 
@@ -155,7 +166,9 @@ const CardList = (props: ListProps) => {
   const filteredColumns = useMemo(() => {
     return filterFields.map(f => {
       if (!f.filter) {
-        f.filter = (k: Card[typeof f.key]) => card => card[f.key] === k;
+        f.filter = (card: Card, k: any) => {
+          return card[f.key] === k
+        };
       }
       if (!f.sort) {
         f.sort = (a: Card, b: Card) => a[f.key] > b[f.key] ? 1 : -1;
@@ -163,28 +176,52 @@ const CardList = (props: ListProps) => {
       return f;
     })
   }, [])
+
+  const filteredCards = useMemo(() => {
+    const filteredColumnsObject = filteredColumns.reduce((acc, val) => ({ ...acc, [val.key]: val}), {} as any)
+    const res = cardIndexesArray.filter(cKey => {
+      const card = cardDb[cKey];
+      return !Object.entries(appliedFilter).some(([fkey, fval]) => {
+        return fval
+          && fval.length > 0
+          && !(filteredColumnsObject[fkey as any]?.filter?.(card, fval[0]))
+      });
+    })
+    return res;
+  }, [appliedFilter, filteredColumns]);
+
   return (
     <>
-    { filters.TypeRef.map(f => {
-      const nameFor = `filter-typeRef-${f}`
-      return (
-        <>| 
-          <label htmlFor={nameFor}>{f}</label>
-          <input type="checkbox" name={nameFor} checked={appliedFilter.TypeRef?.includes(f)} onChange={() => updateFilter('TypeRef', [f])} />
-        </>
-      );
-    }
-    )}
+    <ul>
+      {['TypeRef', 'Power', 'Item Type', 'GenreRef', 'CID'].map((v) => (
+
+        <li>{v}:
+          { filters[v].map(f => {
+            const nameFor = `filter-${v.replace(/ /g, '-')}-${f}`
+            return (
+              <>
+                —{' '}
+                <label htmlFor={nameFor}>{f}</label>
+                <input type="checkbox" name={nameFor} checked={appliedFilter[v]?.includes(f)} onChange={() => updateFilter(v, [f])} />
+                
+              </>
+            );
+          })}
+        </li>
+      ))}
+    </ul>
+
     <table>
       <thead>
         <tr>
           { infoColumns.map(v => <th>{v.name}</th>)}
           { filteredColumns.map(v => <th className={`filter ${v.short ? 'filter--short' : ''}`}>{(v.name || v.key).substring(0, v.short || Infinity)}</th>)}
-          <th>{
-            stage === 'own'
-              ? <StageActions />
-              : stage
-            }</th>
+          {['own', 'want', 'dispose'].map(stage => (
+            <th>
+              {/* Limit to filtered cards */}
+              <ToggleAll stage={stage as CollectionStage} />
+            </th>
+          ))}
           { canSwap && <th>Swap</th>}
         </tr>
       </thead>
@@ -192,14 +229,13 @@ const CardList = (props: ListProps) => {
         { filteredCards.map((cardKey) => {
             const cardData = cardDb[cardKey];
             const inputName = `checkbox_${cardKey}`;
-            if (appliedFilter.TypeRef?.length && appliedFilter.TypeRef?.includes(cardData.TypeRef as any)) {
-              return null;
-            }
+
             if (!cardData) {
               return null;
             }
+            const collectionInfo = collection[cardKey];
             return (
-              <tr id={cardData['Source CID']}>
+              <tr id={cardData['Source CID']} key={`row-${cardData['Source CID']}`}>
                 { infoColumns.map(c => (
                   <td>
                     {c.render(cardKey)}
@@ -211,15 +247,35 @@ const CardList = (props: ListProps) => {
                 <td>
                   <input
                     type="checkbox"
-                    name={inputName}
-                    checked={props.collection[cardKey]?.[stage]}
-                    onChange={() => props.onCheck!(cardKey, stage, true)}
+                    name={`${inputName}-own`}
+                    checked={collectionInfo?.own}
+                    onChange={() => props.onCheck!(cardKey, 'own', true)}
+                    disabled={collectionInfo?.want}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    name={`${inputName}-want`}
+                    checked={collectionInfo?.want}
+                    onChange={() => props.onCheck!(cardKey, 'want', true)}
+                    disabled={!!collectionInfo?.own}
+                  />
+                </td>
+                <td>
+
+                  <input
+                    type="checkbox"
+                    name={`${inputName}-dispose`}
+                    checked={collectionInfo?.dispose}
+                    onChange={() => props.onCheck!(cardKey, 'dispose', true)}
+                    disabled={!collectionInfo?.own}
                   />
                 </td>
                 {canSwap && (
                   <td>
-                    { canSwap && (props.collection[cardKey]?.want || props.collection[cardKey]?.dispose)
-                        ? <CardSwap card={cardData} disabled={allSwapped} />
+                    { canSwap && (collectionInfo?.want || collectionInfo?.dispose)
+                        ? <CardSwap card={cardData} disabled={allSwapped} invert={collectionInfo?.dispose} />
                         : '---'
                     }
                   </td>

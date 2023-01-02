@@ -1,10 +1,10 @@
 import { CollectionContextProvider, CollectionStage, collectStages, getCollection, useCollectionContext } from "./CollectionContext"
-import { v4 as uuidv4 } from "uuid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CardList from "./CardList";
 import { CardKey } from "../datasets";
 import { SwapContextProvider, useSwapContext } from "../Swap/SwapContext";
 import { ProcessSwap } from "../Swap/ProcessSwap";
+import { PlaylistList } from "./PlaylistList";
 
 
 const CollectionNavigation = (props: { initialising: boolean}) => {
@@ -52,7 +52,6 @@ const CardOwnership = () => {
 
   return (
     <>
-      <CollectionNavigation initialising={needsCollection} />
       { stage !== 'own' && needsCollection
         ? <>Please select some cards as being owned by you first</>
         : (
@@ -81,15 +80,15 @@ const saveCollectionList = (collectionId: string) => {
 }
 
 export const CardOwnershipWrapper = () => {
-  
   const [collectionIds, setCollectionIds] = useState<string[]>(getCollections())
   const [collectionId, setCollectionId] = useState(collectionIds[collectionIds.length - 1]);
+  const [view, setView] = useState<'card' | 'playlist'>('card');
 
   useEffect(() => {
     if (!collectionId) {
-      setCollectionId(uuidv4());
+      setCollectionId('default');
     }
-  }, []);
+  }, [collectionId]);
 
   useEffect(() => {
     const savedCollections = getCollections();
@@ -110,26 +109,37 @@ export const CardOwnershipWrapper = () => {
   return (
     <>
       <select value={collectionId} onChange={e => {
-        if (collectionIds.includes(e.target.value) || window.confirm('create new collection')) {
+        if (collectionIds.includes(e.target.value)) {
           setCollectionId(e.target.value)
         }
       }}>
         {collectionIds.map(c => {
-          const collection = getCollection(c);
           return (
-            <option value={c} disabled={c === collectionId}>{new Date(collection.savedTime! || 0).toISOString()}</option>
+            <option value={c} disabled={c === collectionId}>{c}</option>
           )
         })}
       </select>
       <button
         onClick={() => {
-          window.confirm('create new collection') && setCollectionId(uuidv4())
+          let name = window.prompt('Please give the collection a name');
+          if (name) {
+            setCollectionId(name);
+          } else {
+            window.alert('collection already exists')
+          }
         }}>New Collection</button>
       <button>Delete Collection</button>
+      <select onChange={(e) => setView(e.target.value as any)} value={view}>
+        <option value="card">Cards</option>
+        <option value="playlist">Playlist</option>
+      </select>
      
       <CollectionContextProvider collectionId={collectionId}>
         <SwapContextProvider>
-          <CardOwnership />
+          { view === 'card'
+            ? <CardOwnership />
+            : <PlaylistList />
+          }
         </SwapContextProvider>
       </CollectionContextProvider>
     </>

@@ -11,7 +11,7 @@ const getEllipsesText = (str: string, limit = 15) => {
   return str;
 }
 
-export const CardSwap = (props: { card: Card, disabled: boolean }) => {
+export const CardSwap = (props: { card: Card, disabled: boolean, invert?: boolean }) => {
   const [swapReady, setSwapReady] = useState(false);
   const { collection, stage } = useCollectionContext();
   const { onSwap, swapped } = useSwapContext();
@@ -58,7 +58,7 @@ export const CardSwap = (props: { card: Card, disabled: boolean }) => {
         -----
       </option>
       {(Object.entries(collection) as [CardKey, CardCollectionValues][])
-        .filter(([key, card]) => stage === 'want' ? card.dispose : card.want)
+        .filter(([key, card]) => props.invert ? card.dispose : card.want)
         .map(([id]) => {
           return (
             <option value={id} disabled={!!swapped[id]}>

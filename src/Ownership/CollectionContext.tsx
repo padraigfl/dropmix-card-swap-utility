@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { CardKey } from "../datasets";
+import { CardKey, Playlists } from "../datasets";
 import { v4 as uuidv4 } from "uuid";
 import cardDb from '../cardDb.json';
+import { playlists } from "../tools/variables";
 
 export type CollectionStage = 'own' | 'want' | 'dispose';
 
@@ -36,6 +37,7 @@ interface CollectionContextType {
   collection: CardCollection;
   id: string;
   updateCollection: (card: CardKey, key: keyof CardCollectionValues, value: boolean) => void;
+  updateCollectionByPlaylist: (card: keyof Playlists, key: keyof CardCollectionValues, value: boolean) => void;
   undoChanges: () => void;
 }
 
@@ -51,7 +53,7 @@ export const getCollection = (collectionId?: string): CardCollectionData => {
   return {
     collection: (
       Object.keys(cardDb).reduce(
-        (acc, k) => ({ ...acc, [k]: { own: false, want: false, swapee: false }}),
+        (acc, k) => ({ ...acc, [k]: { own: false, want: false, dispose: false }}),
         {},
       )
     ),
@@ -99,6 +101,33 @@ export const useCollectionValues = (collectionId: string) => {
     })
   }, []);
 
+  const updateCollectionByPlaylist = useCallback((playlist: keyof Playlists, key: keyof OwnedCard, value: boolean) => {
+    setCollection(prev => {
+      const prevCopy = { ...prev };
+      playlists[playlist].forEach((cardKey) => {
+        const newCard = { ...collection[cardKey], [key]: value } as CardCollectionValues;
+        if (key === 'own') {
+          if (value && newCard?.want) {
+            newCard.want = false;
+          } else if (!value && newCard?.dispose) {
+            newCard.dispose = false
+          }
+        } else if (key === 'want') {
+          if (value) {
+            newCard.own = false;
+            newCard.dispose = false;
+          }
+        } else if (key === 'dispose' && value) {
+          newCard.own = true;
+          newCard.want = false;
+        }
+
+        prevCopy[cardKey] = newCard;
+      })
+      return prevCopy;
+    })
+  }, [collection]);
+
   useEffect(() => {
     const newCollection = getCollection(collectionId).collection
     setCollection(newCollection);
@@ -122,11 +151,12 @@ export const useCollectionValues = (collectionId: string) => {
   return useMemo(() => ({
     collection,
     updateCollection,
+    updateCollectionByPlaylist,
     undoChanges,
     stage,
     setStage,
     id: collectionId,
-  }), [stage, collection, undoChanges, updateCollection, collectionId])
+  }), [stage, collection, undoChanges, updateCollection, collectionId, updateCollectionByPlaylist])
 };
 
 export const useCollectionContext = () => useContext(CollectionContext);

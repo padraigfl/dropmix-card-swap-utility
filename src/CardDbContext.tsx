@@ -11,6 +11,7 @@ export const getCardFilters = () => {
     "Season": new Set<number>(),
     "TypeRef": new Set<string>(),
     "GenreRef": new Set<string>(),
+    "CID": new Set<string>(['LIC', 'HMX', 'FX'])
   };
   // const instrument = new Set<string>();
   Object.entries(cardDb).forEach(([cardKey, cardData]) => {
@@ -18,7 +19,7 @@ export const getCardFilters = () => {
     filters['Item Type'].add(cardData['Item Type']);
     filters.TypeRef.add(cardData.TypeRef);
     if (typeof cardData.GenreRef === 'string') {
-      filters.GenreRef.add(cardData.GenreRef.replace('genre_', ''))
+      cardData.GenreRef.replace(/genre_/g, '').split(' ').forEach(g => filters.GenreRef.add(g))
     }
     filters.Power.add(cardData.Power);
     filters.Season.add(cardData.Season);
@@ -54,12 +55,13 @@ export const useCardDbContext = () => {
       }
       return {
         ...oldFilters,
-        [updatedKey]: oldFilter.includes(value[0])
-          ? oldFilter.filter(v => v !== value[0])
-          : [
-            ...oldFilter,
-            ...value,
-          ]
+        // [updatedKey]: oldFilter.includes(value[0])
+        //   ? oldFilter.filter(v => v !== value[0])
+        //   : [
+        //     ...oldFilter,
+        //     ...value,
+        //   ]
+        [updatedKey]: oldFilter.includes(value[0]) ? [] : [value[0]]
       }
     });
   }, []);
