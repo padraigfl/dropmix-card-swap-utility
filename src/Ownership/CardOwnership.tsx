@@ -1,66 +1,17 @@
-import { CollectionContextProvider, CollectionStage, collectStages, getCollection, useCollectionContext } from "./CollectionContext"
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { CollectionContextProvider } from "./CollectionContext"
+import { useEffect, useState } from "react";
 import CardList from "./CardList";
-import { CardKey } from "../datasets";
-import { SwapContextProvider, useSwapContext } from "../Swap/SwapContext";
-import { ProcessSwap } from "../Swap/ProcessSwap";
+import { SwapContextProvider } from "../Swap/SwapContext";
 import { PlaylistList } from "./PlaylistList";
+import { ProcessSwap } from "../Swap/ProcessSwap";
 
-
-const CollectionNavigation = (props: { initialising: boolean}) => {
-  const { stage, setStage, collection } = useCollectionContext();
-  const { swapped } = useSwapContext();
-
-  const stageCounts = useMemo(() =>
-    Object.values(collection).reduce(
-      (counts, val) => {
-        if (val.own) {
-          counts.own++;
-        }
-        if (val.want) {
-          counts.want++;
-        }
-        if (val.dispose) {
-          counts.dispose++;
-        }
-        return counts;
-      }, { own: 0, want: 0, dispose: 0 })
-  , [collection]);
-
+const CardOwnership = (props: { view: 'card' | 'playlist' }) => {
   return (
     <>
-      {collectStages.map(s =>
-        <button onClick={() => setStage(s)} disabled={stage === s || (s !== 'own' && props.initialising)}>
-          {s} {stageCounts[s] ? `(${stageCounts[s]})` : ''}
-        </button>
-      )}
-      { Object.keys(swapped).length && (<ProcessSwap />)}
-    </>
-  )
-}
-
-const CardOwnership = () => {
-  const { updateCollection, collection, stage } = useCollectionContext();
-  const toggleCardStatus = useCallback((card: CardKey, status: CollectionStage) => {
-    updateCollection(card, status, !collection[card]?.[status])
-  }, [updateCollection, collection]);
-
-  const needsCollection = Object.values(collection).every(c => !c.own);
-  if (stage !== 'own' && needsCollection) {
-    return <>Please select some cards as being owned by you first</>
-  }
-
-  return (
-    <>
-      { stage !== 'own' && needsCollection
-        ? <>Please select some cards as being owned by you first</>
-        : (
-          <CardList
-            action={stage}
-            onCheck={toggleCardStatus}
-            collection={collection}
-          />
-        )
+      <ProcessSwap />
+      { props.view === 'playlist'
+        ? <PlaylistList />
+        : <CardList />
       }
     </>
   )
@@ -128,18 +79,23 @@ export const CardOwnershipWrapper = () => {
             window.alert('collection already exists')
           }
         }}>New Collection</button>
-      <button>Delete Collection</button>
+      <button disabled={collectionIds.length < 2} onClick={() => {
+        // TODO tidy this mess up
+        if (!!collectionId && collectionIds.length > 1 && window.confirm('Are you sure you want to delete this collection')) {
+          localStorage.removeItem(`card-${collectionId}`);
+          const newList = collectionIds.filter(c => c !== collectionId);
+          localStorage.setItem('collections', JSON.stringify(newList));
+          setCollectionIds(newList)
+          setCollectionId(newList[0]);
+        }
+      }}>Delete Collection</button>
       <select onChange={(e) => setView(e.target.value as any)} value={view}>
         <option value="card">Cards</option>
         <option value="playlist">Playlist</option>
       </select>
-     
       <CollectionContextProvider collectionId={collectionId}>
         <SwapContextProvider>
-          { view === 'card'
-            ? <CardOwnership />
-            : <PlaylistList />
-          }
+          <CardOwnership view={view}/>
         </SwapContextProvider>
       </CollectionContextProvider>
     </>

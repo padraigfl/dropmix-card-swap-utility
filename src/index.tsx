@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Navigate } from 'react-router';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
+import { DocxDownloader } from './components/DocxDownloader';
 import { CardOwnershipWrapper } from './Ownership/CardOwnership';
 import { PlaylistWrapper } from './Playlist/Playlist';
 import reportWebVitals from './reportWebVitals';
@@ -11,11 +11,11 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <>GGAAGHHH</>,
+    errorElement: <>Something went wrong and I'm not sure what it was</>,
     children: [
       { path: 'card', element: <CardOwnershipWrapper /> },
       { path: 'playlist', element: <PlaylistWrapper /> },
-      { path: 'home', element: <>Please upload a file</> },
+      { path: 'home', element: <DocxDownloader playlist="dapper" /> },
       { path: 'info', element: <>Please help me</> },
       { path: 'guide', element: <>Here is the guide</>}
     ]

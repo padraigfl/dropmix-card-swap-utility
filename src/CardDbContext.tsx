@@ -1,6 +1,5 @@
-import { createContext, useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 import cardDb from './cardDb.json';
-
 
 export const getCardFilters = () => {
   const filters = {
@@ -11,7 +10,7 @@ export const getCardFilters = () => {
     "Season": new Set<number>(),
     "TypeRef": new Set<string>(),
     "GenreRef": new Set<string>(),
-    "CID": new Set<string>(['LIC', 'HMX', 'FX'])
+    "Source CID": new Set<string>(['LIC', 'HMX', 'FX'])
   };
   // const instrument = new Set<string>();
   Object.entries(cardDb).forEach(([cardKey, cardData]) => {
@@ -35,17 +34,10 @@ export const getCardFilters = () => {
 export const filters = getCardFilters();
 const defaultFilters = Object.entries(filters).reduce((acc, [k, v]) => ({ ...acc, [k]: []}), {})
 
-const CardDbContext = createContext({} as any);
-
-
-type cardIndex = keyof typeof cardDb;
 type filterKey = keyof typeof filters;
 
-export const useCardDbContext = () => {
-  const context = useContext(CardDbContext);
+export const useCardFilters = () => {
   const [appliedFilter, setFilter] = useState<{ [cardId in keyof typeof filters]?: (typeof filters[cardId])[] }>(defaultFilters);
-
-  const [swapList, setSwapList] = useState<{ [card in cardIndex]?: cardIndex}>({});
 
   const updateFilter = useCallback((updatedKey: filterKey, value: typeof filters[filterKey][]) => {
     setFilter(oldFilters => {
@@ -67,8 +59,6 @@ export const useCardDbContext = () => {
   }, []);
 
   return {
-    swapList,
-    setSwapList,
     appliedFilter,
     updateFilter,
   }

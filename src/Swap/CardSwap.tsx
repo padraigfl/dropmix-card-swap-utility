@@ -13,7 +13,7 @@ const getEllipsesText = (str: string, limit = 15) => {
 
 export const CardSwap = (props: { card: Card, disabled: boolean, invert?: boolean }) => {
   const [swapReady, setSwapReady] = useState(false);
-  const { collection, stage } = useCollectionContext();
+  const { collection } = useCollectionContext();
   const { onSwap, swapped } = useSwapContext();
   const swapVal = useMemo(() => swapped[props.card['Source CID'] as CardKey], [swapped, props.card])
 

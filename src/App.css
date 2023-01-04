@@ -5,7 +5,7 @@ body {
 }
 
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 0px;
   width: 100vw;
@@ -42,16 +42,10 @@ td, th {
   text-align: left;
 }
 td .img {
-  max-height: 80px;
+  display: block;
+  max-height: 50px;
   transition: all linear 200ms;
   margin: 0 auto;
 }
-td .img--large {
-  display: none;
-}
-td:hover .img--large {
-  z-index: 10;
-  position: absolute;
-  display: block;
-}
+
 

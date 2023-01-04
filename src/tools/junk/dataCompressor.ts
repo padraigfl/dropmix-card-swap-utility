@@ -1,6 +1,6 @@
-import cardDb from '../cardDb.json';
-import { CardKey } from '../datasets';
-import { cardIndexes } from './variables';
+import cardDb from '../../cardDb.json';
+import { CardKey } from '../../datasets';
+import { cardIndexes } from '../variables';
 
 // TODO:
 // // break bit list into chunks of 31 entries per section to compress reliably

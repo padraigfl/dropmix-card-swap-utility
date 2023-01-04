@@ -1,11 +1,12 @@
-import { ReactNode, useMemo, useRef, useEffect, useCallback } from 'react';
+import { ReactNode, useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { Card, CardKey } from '../datasets';
 import { CardCollection, CollectionStage, useCollectionContext } from './CollectionContext';
 import { cardIndexesArray } from '../tools/variables';
 import { useSwapContext } from '../Swap/SwapContext';
 import cardDb from '../cardDb.json';
 import { CardSwap } from '../Swap/CardSwap';
-import { filters, useCardDbContext } from '../CardDbContext';
+import { filters, useCardFilters } from '../CardDbContext';
+import { DialogControl } from '../components';
 
 export type ListProps = {
   action: CollectionStage,
@@ -30,15 +31,29 @@ const filterFields: Columns[] = [
   { key: 'GenreRef', name: 'Genre', filter: (card: Card, genre: string) => {
     return `${card['GenreRef']}`.includes(`genre_${genre}`)
   }, },
-  { key: 'CID', name: 'Music', filter: (card: Card, prefix: string) => { debugger; return card['Source CID'].includes(prefix) }}
+  { key: 'Source CID', name: 'Music', filter: (card: Card, prefix: string) => {
+    debugger; return card['Source CID'].includes(prefix) }}
   // { key: 'Instrument', name: 'Instrument', filter: (k: Instrument) => card => [instrument 1 to 4].includes(instrument)}
 ]
 
-const ToggleAll = (props: { stage: CollectionStage }) => {
+const ToggleAll = (props: { stage: CollectionStage, disabled?: boolean }) => {
   const { collection, updateCollection } = useCollectionContext();
-  const { stage } = props;
+  const { stage, disabled } = props;
   const toggleRef = useRef<HTMLInputElement | null>()
-  const { appliedFilter } = useCardDbContext();
+  const { appliedFilter } = useCardFilters();
+
+  const counts = useMemo(() => {
+    const count = { own: 0, want: 0, dispose: 0 };
+    Object.values(collection).forEach(v => {
+      ['own', 'want', 'dispose'].forEach((s: any) => {
+        const pointlesskeytoshutuptypescript = s as unknown as CollectionStage
+        if (v[pointlesskeytoshutuptypescript]) {
+          count[pointlesskeytoshutuptypescript]++;
+        }
+      })
+    })
+    return count;
+  }, [collection])
 
   const checkedStatus = useMemo(() => {
     return Object.entries(collection).reduce((acc, [k, v]) => {
@@ -59,10 +74,16 @@ const ToggleAll = (props: { stage: CollectionStage }) => {
         toggleRef.current.checked = false;
         toggleRef.current.indeterminate = true;
       }
+      if (disabled) {
+        toggleRef.current.disabled = true;
+      }
     }
-  }, [checkedStatus])
+  }, [checkedStatus, disabled])
 
   const toggleAllDisabled = useMemo(() => Object.values(collection).every(v => {
+    if (props.disabled) {
+      return true
+    }
     if (stage === 'dispose') {
       return !v.own
     }
@@ -75,12 +96,14 @@ const ToggleAll = (props: { stage: CollectionStage }) => {
     throw Error("shouldn't get in here")
   }), [collection, stage]);
 
-  const toggleAll = useCallback(() => {
+  const toggleAll = useCallback((e: any) => {
     const toggleAction = !checkedStatus.not.length ? false : true;
     const otherStages = ['own', 'want', 'dispose'].filter(v => v !== stage) as CollectionStage[]
     const warningRequired = Object.values(collection)
       .some(c => otherStages.map(s => c[s]).includes(true))
     if (warningRequired && !window.confirm('this may impact other datasets, are you sure?')) {
+      e.stopPropagation();
+      e.preventDefault();
       return;
     }
     Object.keys(collection).forEach(k => {
@@ -109,8 +132,10 @@ const ToggleAll = (props: { stage: CollectionStage }) => {
   }, [checkedStatus, stage, collection, updateCollection, appliedFilter]);
   const toggleName = `toggleAll-${props.stage}`
   return (
-    <label htmlFor={toggleName}>
-      {props.stage }
+    <>
+      <label htmlFor={toggleName}>
+        {props.stage } ({ counts[props.stage]})
+      </label>
       <input
         ref={r => { toggleRef.current = r }}
         name={toggleName}
@@ -118,7 +143,7 @@ const ToggleAll = (props: { stage: CollectionStage }) => {
         onChange={toggleAll}
         disabled={toggleAllDisabled}
       />
-    </label>
+    </>
   )
 }
 
@@ -130,8 +155,7 @@ export const infoColumns: {
     name: 'Image',
     render: k => (
       <>
-        <img loading="lazy" className="img" src={`/assets/images/100-card_${k}.png`} alt={`artwork for ${cardDb[k].SongRef}`} />
-        <img loading="lazy" className="img--large" src={`/assets/images/240-card_${k}.png`}  alt={`artwork for ${cardDb[k].SongRef}`} />
+        <img loading="lazy" className="img" src={`/assets/images/100-card_${k}.png`} alt={`artwork for ${cardDb[k].SongRef}`} data-image={`/assets/images/240-card_${k}.png`} />
       </>
       
     )
@@ -140,15 +164,25 @@ export const infoColumns: {
   { name: 'Song', render: k => cardDb[k].SongRef },
 ]
 
-const CardList = (props: ListProps) => {
-  const { appliedFilter, updateFilter } = useCardDbContext();
-  // useEffect(() => {
-  //   window.fetch('/assets/cardDb.json')
-  //     .then(res => res.json())
-  //     .then(d => { debugger })
-  // })
+const CardList = () => {
+  const { appliedFilter, updateFilter } = useCardFilters();
   const { swapped } = useSwapContext();
-  const { collection } = useCollectionContext();
+  const { collection, updateCollection } = useCollectionContext();
+  const hackyCardModalListenerRef = useRef<any>(null);
+  const [bigImage, setBigImage] = useState('');
+
+  useEffect(() => {
+    hackyCardModalListenerRef.current = document.addEventListener('click', (e: { target: any }) => {
+      if (e?.target?.dataset?.image) {
+        setBigImage(e?.target?.dataset?.image)
+      } else {
+        setBigImage('')
+      }
+    });
+    return () => {
+      document.removeEventListener('click', hackyCardModalListenerRef.current);
+    }
+  }, []);
 
   const canSwap = useMemo(() => {
     const values = Object.values(collection);
@@ -173,6 +207,7 @@ const CardList = (props: ListProps) => {
       if (!f.sort) {
         f.sort = (a: Card, b: Card) => a[f.key] > b[f.key] ? 1 : -1;
       }
+      debugger;
       return f;
     })
   }, [])
@@ -192,8 +227,18 @@ const CardList = (props: ListProps) => {
 
   return (
     <>
+    { bigImage && (
+      <DialogControl initialOpenState noOpenButton>
+        { setOpen => {
+          return (
+          <>
+            <img src={bigImage} alt={bigImage}/>
+          </>
+        )}}
+      </DialogControl>
+    )}
     <ul>
-      {['TypeRef', 'Power', 'Item Type', 'GenreRef', 'CID'].map((v) => (
+      {['TypeRef', 'Power', 'Item Type', 'GenreRef', 'Season', 'Source CID'].map((v) => (
 
         <li>{v}:
           { filters[v].map(f => {
@@ -203,7 +248,6 @@ const CardList = (props: ListProps) => {
                 —{' '}
                 <label htmlFor={nameFor}>{f}</label>
                 <input type="checkbox" name={nameFor} checked={appliedFilter[v]?.includes(f)} onChange={() => updateFilter(v, [f])} />
-                
               </>
             );
           })}
@@ -219,7 +263,7 @@ const CardList = (props: ListProps) => {
           {['own', 'want', 'dispose'].map(stage => (
             <th>
               {/* Limit to filtered cards */}
-              <ToggleAll stage={stage as CollectionStage} />
+              <ToggleAll stage={stage as CollectionStage} disabled={filteredCards.length !== 440} />
             </th>
           ))}
           { canSwap && <th>Swap</th>}
@@ -249,7 +293,7 @@ const CardList = (props: ListProps) => {
                     type="checkbox"
                     name={`${inputName}-own`}
                     checked={collectionInfo?.own}
-                    onChange={() => props.onCheck!(cardKey, 'own', true)}
+                    onChange={() => updateCollection(cardKey, 'own', !collectionInfo?.own)}
                     disabled={collectionInfo?.want}
                   />
                 </td>
@@ -258,7 +302,7 @@ const CardList = (props: ListProps) => {
                     type="checkbox"
                     name={`${inputName}-want`}
                     checked={collectionInfo?.want}
-                    onChange={() => props.onCheck!(cardKey, 'want', true)}
+                    onChange={() => updateCollection(cardKey, 'want', !collectionInfo?.want)}
                     disabled={!!collectionInfo?.own}
                   />
                 </td>
@@ -268,14 +312,14 @@ const CardList = (props: ListProps) => {
                     type="checkbox"
                     name={`${inputName}-dispose`}
                     checked={collectionInfo?.dispose}
-                    onChange={() => props.onCheck!(cardKey, 'dispose', true)}
+                    onChange={() => updateCollection(cardKey, 'dispose', !collectionInfo?.dispose)}
                     disabled={!collectionInfo?.own}
                   />
                 </td>
                 {canSwap && (
                   <td>
                     { canSwap && (collectionInfo?.want || collectionInfo?.dispose)
-                        ? <CardSwap card={cardData} disabled={allSwapped} invert={collectionInfo?.dispose} />
+                        ? <CardSwap card={cardData} disabled={allSwapped} invert={!collectionInfo?.dispose} />
                         : '---'
                     }
                   </td>

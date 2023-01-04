@@ -1,7 +1,4 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useNavigate, useNavigation } from "react-router";
-import { DialogControl } from "../components";
-import { CardKey } from "../datasets";
 import { getMinifiedSwap, Swapped } from "../Swap/SwapContext";
 import { changeCardRelation } from "../tools/modifiers";
 import { buildDataBase, databaseParser, DBData } from "../tools/parseDatabase";

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { CollectionContextProvider } from "../Ownership/CollectionContext";
 import { PlaylistSwap } from "../Swap/PlaylistSwap";
 import { ProcessSwap } from "../Swap/ProcessSwap";
@@ -16,10 +15,8 @@ const Playlist = () => {
 }
 
 export const PlaylistWrapper = () => {
-  const [id, setId] = useState('abc');
-
   return (
-    <CollectionContextProvider collectionId={id}>
+    <CollectionContextProvider collectionId={'playlistswap'}>
       <SwapContextProvider>
         <Playlist />
       </SwapContextProvider>

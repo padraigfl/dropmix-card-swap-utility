@@ -1,6 +1,5 @@
 import { DialogControl } from "../components"
 import { getMinifiedSwap, useSwapContext } from "./SwapContext"
-import cardDb from '../cardDb.json';
 import { useMemo } from "react";
 import { infoColumns } from "../Ownership/CardList";
 import { CardKey } from "../datasets";
@@ -13,7 +12,7 @@ export const ProcessSwap = () => {
   const swapCount = Object.keys(swapped).length;
 
   return (
-    <DialogControl buttonText={`Download Swap ${swapCount ? `(${swapCount})` : ''}`}>
+    <DialogControl disabled={!Object.keys(swapped).length} buttonText={`Download Swap ${swapCount ? `(${swapCount})` : ''}`}>
       {onClose => (
         <>
           <button onClick={() => {

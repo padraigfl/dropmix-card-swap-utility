@@ -32,8 +32,6 @@ type CardCollectionData = {
 }
 
 interface CollectionContextType {
-  stage: CollectionStage;
-  setStage: (s: CollectionStage) => void;
   collection: CardCollection;
   id: string;
   updateCollection: (card: CardKey, key: keyof CardCollectionValues, value: boolean) => void;
@@ -70,7 +68,6 @@ export const useCollectionValues = (collectionId: string) => {
   const [collection, setCollection] = useState<CardCollection>(
     getCollection(collectionId).collection
   );
-  const [stage, setStage] = useState<CollectionStage>('own');
   const original = useRef(window.localStorage.getItem(`card-${collectionId}`) ? collection : null);
 
   const updateCollection = useCallback((card: CardKey, key: keyof OwnedCard, value: boolean) => {
@@ -153,10 +150,8 @@ export const useCollectionValues = (collectionId: string) => {
     updateCollection,
     updateCollectionByPlaylist,
     undoChanges,
-    stage,
-    setStage,
     id: collectionId,
-  }), [stage, collection, undoChanges, updateCollection, collectionId, updateCollectionByPlaylist])
+  }), [collection, undoChanges, updateCollection, collectionId, updateCollectionByPlaylist])
 };
 
 export const useCollectionContext = () => useContext(CollectionContext);

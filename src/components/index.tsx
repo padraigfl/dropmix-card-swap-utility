@@ -20,10 +20,11 @@ interface DialogProps {
   buttonElement?: ReactElement | string;
   initialOpenState?: boolean;
   noOpenButton?: boolean;
+  disabled?: boolean;
 }
 
 export const DialogControl = (props: DialogProps) => {
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(!!props.initialOpenState);
 
   if (!props.initialOpenState && props.noOpenButton) {
     throw new Error('Dialog will not function with no open button and closed initially')
@@ -31,7 +32,7 @@ export const DialogControl = (props: DialogProps) => {
 
   return (
     <>
-      <button onClick={() => setOpen(true)}>{props.buttonText || 'Open'}</button>
+      {!props.noOpenButton && <button disabled={props.disabled} onClick={() => setOpen(true)}>{props.buttonText || 'Open'}</button>}
       { isOpen && (
         <Dialog onClose={() => setOpen(false)}>
           { props.children(() => setOpen(false)) }
