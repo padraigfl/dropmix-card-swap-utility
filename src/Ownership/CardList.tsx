@@ -36,9 +36,9 @@ const filterFields: Columns[] = [
   // { key: 'Instrument', name: 'Instrument', filter: (k: Instrument) => card => [instrument 1 to 4].includes(instrument)}
 ]
 
-const ToggleAll = (props: { stage: CollectionStage, disabled?: boolean }) => {
+const ToggleAll = (props: { stage: CollectionStage, filteredCards: CardKey[], disabled?: boolean }) => {
   const { collection, updateCollection } = useCollectionContext();
-  const { stage, disabled } = props;
+  const { stage, disabled, filteredCards } = props;
   const toggleRef = useRef<HTMLInputElement | null>()
   const { appliedFilter } = useCardFilters();
 
@@ -94,10 +94,10 @@ const ToggleAll = (props: { stage: CollectionStage, disabled?: boolean }) => {
       return !!v.own
     }
     throw Error("shouldn't get in here")
-  }), [collection, stage]);
+  }), [collection, stage, props.disabled]);
 
   const toggleAll = useCallback((e: any) => {
-    const toggleAction = !checkedStatus.not.length ? false : true;
+    const toggleAction = !filteredCards.some(c => !collection![c]![stage]) ? false : true;
     const otherStages = ['own', 'want', 'dispose'].filter(v => v !== stage) as CollectionStage[]
     const warningRequired = Object.values(collection)
       .some(c => otherStages.map(s => c[s]).includes(true))
@@ -106,7 +106,7 @@ const ToggleAll = (props: { stage: CollectionStage, disabled?: boolean }) => {
       e.preventDefault();
       return;
     }
-    Object.keys(collection).forEach(k => {
+    filteredCards.forEach(k => {
       const card = collection[k as CardKey]
       const cardVal = card?.[stage]
 
@@ -129,7 +129,7 @@ const ToggleAll = (props: { stage: CollectionStage, disabled?: boolean }) => {
         updateCollection(k as CardKey, stage, toggleAction)
       }
     });
-  }, [checkedStatus, stage, collection, updateCollection, appliedFilter]);
+  }, [stage, collection, updateCollection, appliedFilter, filteredCards]);
   const toggleName = `toggleAll-${props.stage}`
   return (
     <>
@@ -254,7 +254,7 @@ const CardList = () => {
         </li>
       ))}
     </ul>
-
+    { filteredCards.length !== 440 && <p>Displaying {filteredCards.length} of 440</p> }
     <table>
       <thead>
         <tr>
@@ -263,7 +263,7 @@ const CardList = () => {
           {['own', 'want', 'dispose'].map(stage => (
             <th>
               {/* Limit to filtered cards */}
-              <ToggleAll stage={stage as CollectionStage} disabled={filteredCards.length !== 440} />
+              <ToggleAll filteredCards={filteredCards} stage={stage as CollectionStage} />
             </th>
           ))}
           { canSwap && <th>Swap</th>}

@@ -24,8 +24,8 @@ export const GameDatasetUpload = () => {
       { onClose => (
         <>
           <input type="file" onChange={e => handleLevel0File(e, onClose)} />
-          <button disabled={loading} onClick={() => fetchExistingFile('/assets/sourceData/level0', 'level0', onClose)}>Use iOS Default</button>
-          <button disabled={loading}  onClick={() => fetchExistingFile('/assets/sourceData/level0.split3', 'level0.split3', onClose)}>Use Android Default</button>
+          <button disabled={loading} onClick={() => fetchExistingFile('/assets/sourceData/level0', 'level0', onClose)}>Use iOS 1.9.0</button>
+          <button disabled={loading}  onClick={() => fetchExistingFile('/assets/sourceData/level0.split4', 'level0.split4', onClose)}>Use Android 1.9.0</button>
         </>
       )}
     </DialogControl>

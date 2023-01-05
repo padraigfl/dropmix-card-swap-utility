@@ -25,3 +25,4 @@ yarn-error.log*
 level0
 level0_db
 public/assets
+scripts
