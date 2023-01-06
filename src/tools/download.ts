@@ -25,20 +25,21 @@ export function downloadFile(blob: Blob, name: string) {
   aElement.remove();
 }
 
-export async function downloadCardPrintsheet(cards: CardKey[]){
+export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]){
   const images = await Promise.all(
-    cards.map(card =>
+    cards.map((card, idx) =>
       window.fetch(`/assets/cards/${card}.jpeg`)
         .then(res => res.arrayBuffer())
         .then(async ab => {
 
           const imgBlob = new Blob([new Uint8Array(ab)]);
           let { height, width } = await getImageSizeFromBlob(imgBlob);
-          debugger;
           return {
             height,
             width,
             arrayBuffer: ab,
+            name: card,
+            alt: altTags?.[idx] ? `${card} swapped for ${altTags[idx]}` : card,
           }
         })
     )
@@ -68,21 +69,27 @@ export async function downloadCardPrintsheet(cards: CardKey[]){
       },
       children: [
         new Paragraph({
-          children: images.map(v => new ImageRun({ data: v.arrayBuffer, transformation: { width: v.width / 2.4 , height: v.height / 2.4 } }))
+          children: images.map((v, idx) => {
+            if (!v || !v.arrayBuffer) {
+
+              new Text(`Missing image for ${v?.name}` || 'error')
+            }
+            return new ImageRun({
+              data: v.arrayBuffer,
+              transformation: { width: v.width / 2.4 , height: v.height / 2.4 },
+              altText: {
+                name: v.name,
+                description: v.alt,
+                title: v.name,
+              }
+            })
+          })
         })
       ]
     }]
   })
   return Packer.toBlob(document).then(blob => {
-    downloadFile(blob, 'testfile.docx')
-    const aElement = window.document.createElement('a');
-    aElement.setAttribute('download', 'testfile.docx');
-    const href = URL.createObjectURL(blob);
-    aElement.href = href;
-    aElement.setAttribute('target', '_blank');
-    aElement.click();
-    URL.revokeObjectURL(href);
-    aElement.remove();
+    downloadFile(blob, ''+Date.now()+'testfile.docx')
   });
 }
 
