@@ -101,7 +101,7 @@ export const useCollectionValues = (collectionId: string) => {
   const updateCollectionByPlaylist = useCallback((playlist: keyof Playlists, key: keyof OwnedCard, value: boolean) => {
     setCollection(prev => {
       const prevCopy = { ...prev };
-      playlists[playlist].forEach((cardKey) => {
+      playlists[playlist].cards.forEach((cardKey) => {
         const newCard = { ...collection[cardKey], [key]: value } as CardCollectionValues;
         if (key === 'own') {
           if (value && newCard?.want) {

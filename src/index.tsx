@@ -31,7 +31,7 @@ const router = createBrowserRouter([
             <li>Viewing my <Link to="/about-me">/about-me</Link> page to check out some other things I've done</li>
             <li>Assisting with improving the  <Link to="/guide">/guide</Link> section, I want to make the Android steps as simple as possible. I feel like it should be possible to place it all within a script with adb</li>
             <li>Sending me some of the cards I don't have; (currently I only have the starter decks, derby, mirrors, ouroboros, astro and discovery series 1&2)</li>
-            <li><a href="https://www.buymeacoffee.com/padraig" target="_blank">buymeacofffee</a></li>
+            <li><a href="https://www.buymeacoffee.com/padraig" target="_blank" rel="noreferrer">buymeacofffee</a></li>
           </ul>
         </>
       ) },
@@ -107,6 +107,7 @@ const router = createBrowserRouter([
             <li><a href="https://react-coursebuilder.netlify.app/">React Coursebuilder</a>: Coursera mimicking youtube playlist note taking tool</li>
             <li><a href="https://critics-lists.netlify.app/">Critics Lists</a>: Metacritic end of year list aggregator (I use this one loads and think its great tbh, but very much a thing made by me for me)</li>
           </ul>
+          <p>Feel free to check out <a href="https://github.com/padraigfl">my githubgi</a> for more details.</p>
         </>
       }
     ]

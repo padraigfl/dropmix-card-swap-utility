@@ -41,7 +41,6 @@ export const ProcessSwap = () => {
           >Download Swapped DB</button>
           <button
             onClick={() => {
-              debugger
               downloadCardPrintsheet(Object.keys(minifiedSwap) as CardKey[], Object.values(minifiedSwap))
             }}
             disabled={!downloadTime}

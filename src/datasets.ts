@@ -1,5 +1,6 @@
 import cardDb from './cardDb.json';
 import playbackDb from './playbackDb.json';
+import { bafflers } from './tools/variables';
 
 export type CardKey = keyof typeof cardDb;
 
@@ -20,19 +21,15 @@ export type CardExpanded = Card & {
 }
 
 export type Playlist = CardKey[];
-export interface Playlists {
-  [k: typeof cardDb[CardKey]['Series Icon']]: CardKey[]; 
-}
 
-export const playlists = Object.entries(cardDb).reduce((playlists, [id, currentCard]) => {
-  const playlistName = currentCard['Series Icon']
-  if (playlists[playlistName]) {
-    playlists[playlistName].push(id as CardKey);
-  } else {
-    playlists[playlistName] = [id as CardKey];
+export type PlaylistKey = typeof cardDb[CardKey]['Series Icon'];
+
+export interface Playlists {
+  [k: PlaylistKey]: {
+    cards: CardKey[]; 
+    baffler?: CardKey;
   }
-  return playlists;
-}, {} as Playlists);
+}
 
 export const VALID_PLAYLIST_SIZE = 15;
 

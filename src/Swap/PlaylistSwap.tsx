@@ -1,23 +1,25 @@
 import { useCallback, useMemo, useState } from 'react';
 import cardDb from '../cardDb.json';
-import { Playlists, playlists } from '../datasets';
+import { PlaylistKey, Playlists } from '../datasets';
+import { playlists } from '../tools/variables';
 import { useSwapContext } from './SwapContext';
 
 export const PlaylistSwap = () => {
   const { onSwap } = useSwapContext();
   const [swappedPlaylists, setSwappedPlaylists] = useState<{ [k in keyof Playlists]?: keyof Playlists}>({});
+  const [includeBafflers, setIncludeBafflers] = useState(false);
 
   const validPlaylists = useMemo(() => {
     let validPlaylists: string[] = [];
     Object.keys(playlists).forEach((p) => {
-      if (playlists[p].length === 15) {
+      if (playlists[p].cards.length === 15) {
         validPlaylists.push(p);
       };
     });
     return validPlaylists
       .sort((a, b) => {
-        const card1 = cardDb[playlists[a][0]]
-        const card2 = cardDb[playlists[b][0]]
+        const card1 = cardDb[playlists[a].cards[0]]
+        const card2 = cardDb[playlists[b].cards[0]]
         if (card2.Season > card1.Season) {
           return -1;
         } else if (card1.Season > card2.Season) {
@@ -29,12 +31,15 @@ export const PlaylistSwap = () => {
         return 1;
       }).map(p => ({
       name: p,
-      season: cardDb[playlists[p][0]].Season + 1,
+      season: cardDb[playlists[p].cards[0]].Season + 1,
     }));
   }, []);
 
 
-  const onPlaylistSwap = useCallback((p1: keyof Playlists, p2: keyof Playlists) => {
+  const onPlaylistSwap = useCallback((p1: PlaylistKey, p2: PlaylistKey) => {
+    if (includeBafflers && (!!playlists[p1]?.baffler !== !!playlists[p2]?.baffler)) {
+      alert('This swap will fail as you have enabled swapping corresponding bafflers but one playlist does not have any');
+    }
     setSwappedPlaylists(prev => {
       const prevFiltered = { ...prev };
       if (typeof p1 === 'number' || typeof p2 === 'number') {
@@ -53,48 +58,55 @@ export const PlaylistSwap = () => {
       }
     })
     for (let i = 0; i < 15; i++) {
-      const cardKey1 = playlists[p1][i];
-      const cardKey2 = playlists[p2][i];
+      const cardKey1 = playlists[p1].cards[i];
+      const cardKey2 = playlists[p2].cards[i];
       onSwap([cardKey1, cardKey2]);
     }
-  }, [onSwap]);
+    if (includeBafflers) {
+      onSwap([playlists[p1].baffler!, playlists[p2].baffler!]);
+    }
+  }, [onSwap, includeBafflers]);
 
   return (
-    <table>
-      {validPlaylists.map(p => (
-        <tr>
-          { swappedPlaylists[p.name] && swappedPlaylists[p.name] !== p.name
-            ? <>
-              <td>
-                {p.name}
-                {` ->`} {swappedPlaylists[p.name]}
-              </td>
-              <td>
-                <button
-                  onClick={() => {
-                    const swap1 = swappedPlaylists[p.name]!;
-                    const swap2 = swappedPlaylists[swap1!]!;
-                    onPlaylistSwap(swap1, swap1);
-                    onPlaylistSwap(swap2, swap2)
-                  }}
-                >Clear</button>
-              </td>
-            </>
-            : <>
-              <td>{p.name}</td>
-              <td>
-                <select onChange={e => onPlaylistSwap(p.name, e.target.value)} value={swappedPlaylists[p.name] || p.name}>
-                  {validPlaylists.map(v => (
-                    v.name === p.name
-                      ? <option value={v.name} disabled>---</option>
-                      : <option value={v.name} disabled={Object.values(swappedPlaylists).includes(v.name)}>{v.name}</option>
-                  ))}
-                </select>
-              </td>
-            </>
-          }
-        </tr>
-      ))}
-    </table>
+    <>
+      <label htmlFor="bafflerToggle">Swap bafflers</label>
+      <input name="bafflerToggle" type="checkbox" checked={includeBafflers} onChange={() => setIncludeBafflers(prev => !prev)} />
+      <table>
+        {validPlaylists.map(p => (
+          <tr>
+            { swappedPlaylists[p.name] && swappedPlaylists[p.name] !== p.name
+              ? <>
+                <td>
+                  {p.name}
+                  {` ->`} {swappedPlaylists[p.name]}
+                </td>
+                <td>
+                  <button
+                    onClick={() => {
+                      const swap1 = swappedPlaylists[p.name]! as string; // TODO resolve type
+                      const swap2 = swappedPlaylists[swap1!]! as string; // TODO resolve type
+                      onPlaylistSwap(swap1, swap1);
+                      onPlaylistSwap(swap2, swap2)
+                    }}
+                  >Clear</button>
+                </td>
+              </>
+              : <>
+                <td>{p.name}</td>
+                <td>
+                  <select onChange={e => onPlaylistSwap(p.name, e.target.value)} value={swappedPlaylists[p.name] || p.name}>
+                    {validPlaylists.map(v => (
+                      v.name === p.name
+                        ? <option value={v.name} disabled>---</option>
+                        : <option value={v.name} disabled={Object.values(swappedPlaylists).includes(v.name)}>{v.name}</option>
+                    ))}
+                  </select>
+                </td>
+              </>
+            }
+          </tr>
+        ))}
+      </table>
+    </>
   )
 }

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { CardKey, Playlists, playlists } from "../datasets";
+import { CardKey, Playlists } from "../datasets";
 import { useSwapContext } from "../Swap/SwapContext";
+import { playlists } from "../tools/variables";
 import { CollectionStage, useCollectionContext } from "./CollectionContext"
 
 export const PlaylistList = () => {
@@ -12,13 +13,13 @@ export const PlaylistList = () => {
 
 
   const onCheck = (key: CollectionStage, playlist: string, value: boolean) => {
-    playlists[playlist].forEach(cardId => updateCollectionByPlaylist(playlist, key, value));
+    playlists[playlist].cards.forEach(cardId => updateCollectionByPlaylist(playlist, key, value));
   }
 
   const allSwappable = useMemo(() => {
     return Object.entries(playlists).reduce((acc, [key, val]) => {
       let data = { want: 0, dispose: 0, own: 0 };
-      val.forEach(c => {
+      val.cards.forEach(c => {
         if (collection[c as CardKey]?.want) {
           data.want++;
         }
@@ -40,7 +41,7 @@ export const PlaylistList = () => {
     let swapDisabled = {} as { [k: keyof Playlists]: boolean };
     const swappedFlattened = new Set([...Object.keys(swapped), Object.values(swapped)])
     Object.keys(playlists).forEach(pl => {
-      swapDisabled[pl] = playlists[pl].length !== 15 || playlists[pl].some(c => swappedFlattened.has(c));
+      swapDisabled[pl] = playlists[pl].cards.length !== 15 || playlists[pl].cards.some(c => swappedFlattened.has(c));
     })
     return swapDisabled;
   }, [swapped])
@@ -67,8 +68,8 @@ export const PlaylistList = () => {
       }
     })
     for (let i = 0; i < 15; i++) {
-      const cardKey1 = playlists[p1][i];
-      const cardKey2 = playlists[p2][i];
+      const cardKey1 = playlists[p1].cards[i];
+      const cardKey2 = playlists[p2].cards[i];
       onSwap([cardKey1, cardKey2]);
     }
   }, [onSwap, cantSwapPlaylist]);
@@ -84,7 +85,7 @@ export const PlaylistList = () => {
         <td>Swap</td>
       </tr>
     </thead>
-    { Object.entries(playlists).map(([name, cardIds]) =>
+    { Object.entries(playlists).map(([name, { cards: cardIds }]) =>
       <tr>
         <td>{name}</td>
         <td>{cardIds.length} {JSON.stringify(allSwappable[name])}</td>
@@ -125,7 +126,7 @@ export const PlaylistList = () => {
               ? (
                 <select onChange={e => onPlaylistSwap(name, e.target.value)} value={swappedPlaylists[name] || name}>
                   { Object.keys(playlists).map(v => (
-                    playlists[v].length === 15 && ( allSwappable[v].dispose || v === name)
+                    playlists[v].cards.length === 15 && ( allSwappable[v].dispose || v === name)
                       ? v === name
                         ? <option value={name}> ---- </option>
                         : <option value={v} disabled={cantSwapPlaylist[v]}>{v}</option>

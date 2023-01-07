@@ -32,8 +32,7 @@ const filterFields: Columns[] = [
   { key: 'GenreRef', name: 'Genre', filter: (card: Card, genre: string) => {
     return `${card['GenreRef']}`.includes(`genre_${genre}`)
   }, },
-  { key: 'Source CID', name: 'Music', filter: (card: Card, prefix: string) => {
-    debugger; return card['Source CID'].includes(prefix) }}
+  { key: 'Source CID', name: 'Music', filter: (card: Card, prefix: string) => { return card['Source CID'].includes(prefix) }}
   // { key: 'Instrument', name: 'Instrument', filter: (k: Instrument) => card => [instrument 1 to 4].includes(instrument)}
 ]
 
@@ -208,7 +207,6 @@ const CardList = () => {
       if (!f.sort) {
         f.sort = (a: Card, b: Card) => a[f.key] > b[f.key] ? 1 : -1;
       }
-      debugger;
       return f;
     })
   }, [])

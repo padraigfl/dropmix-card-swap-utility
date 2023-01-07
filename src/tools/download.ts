@@ -26,24 +26,28 @@ export function downloadFile(blob: Blob, name: string) {
 }
 
 export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]){
-  const images = await Promise.all(
-    cards.map((card, idx) =>
-      window.fetch(`/assets/cards/${card}.jpeg`)
+  const images = [];
+  for (let i = 0; i < cards.length; i++){
+
+    const newImage = await new Promise<{ height: number, width: number, arrayBuffer: ArrayBuffer, name: CardKey, alt: string}>(res => 
+      setTimeout(() => {
+        window.fetch(`/assets/cards/${cards[i]}.jpeg`)
         .then(res => res.arrayBuffer())
         .then(async ab => {
-
           const imgBlob = new Blob([new Uint8Array(ab)]);
           let { height, width } = await getImageSizeFromBlob(imgBlob);
-          return {
+          res({
             height,
             width,
             arrayBuffer: ab,
-            name: card,
-            alt: altTags?.[idx] ? `${card} swapped for ${altTags[idx]}` : card,
-          }
+            name: cards[i],
+            alt: altTags?.[i] ? `${cards[i]} swapped for ${altTags[i]}` : cards[i],
+          })
         })
+      }, 100)
     )
-  );
+    images.push(newImage);
+  }
   // const groupedImages = [] as any[];
   // images.forEach((i, idx) => {
   //   if (idx % 3 === 0) {

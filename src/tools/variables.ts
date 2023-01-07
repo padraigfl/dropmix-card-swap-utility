@@ -1,5 +1,24 @@
 import cardDb from '../cardDb.json';
-import { CardKey, Playlist, Playlists } from '../datasets';
+import { CardKey, Playlists } from '../datasets';
+
+export const bafflers: { [k: keyof Playlists]: CardKey } = {
+  derby: 'HMX_0049_Lead',
+  mirrors: 'HMX_0050_Beat',
+  ouroboros: 'LIC_0129_Lead',
+  astro: 'LIC_0131_Lead',
+  lucky: 'HMX_0051_Loop',
+  flawless: 'LIC_0133_Loop',
+  bomb: 'HMX_0052_Bass',
+  chiller: 'LIC_0144_Lead',
+  energy: 'HMX_0055_Beat',
+  city: 'LIC_0103_Loop',
+  flora: 'LIC_0024_Loop',
+  verdant: 'LIC_0165_Lead',
+  rhymer: 'HMX_0075_Lead',
+  phase: 'HMX_0064_Beat',
+  instinct: 'LIC_0149_Loop',
+  fantastic: 'HMX_0074_Bass',
+}
 
 // returns full count of cards in each season
 export const seasonCounts = Object.values(cardDb).reduce((acc, card) => {
@@ -42,9 +61,12 @@ export const cardIndexes = cardIndexesArray.reduce((acc, cardKey, idx) => {
 export const playlists = Object.entries(cardDb).reduce((playlists, [id, currentCard]) => {
   const playlistName = currentCard['Series Icon']
   if (playlists[playlistName]) {
-    playlists[playlistName].push(id as CardKey);
+    playlists[playlistName].cards.push(id as CardKey);
   } else {
-    playlists[playlistName] = [id as CardKey];
+    playlists[playlistName] = {
+      cards: [id as CardKey],
+      baffler: bafflers[playlistName],
+    };
   }
   return playlists;
 }, {} as Playlists);
