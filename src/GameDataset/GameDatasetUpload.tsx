@@ -3,7 +3,7 @@ import { DialogControl } from "../components"
 import { useGameDatasetContext } from "./GameDatasetContext"
 
 export const GameDatasetUpload = () => {
-  const { setCardDbRaw, handleLevel0File, setFilename, downloadUpdatedDatabase } = useGameDatasetContext();
+  const { setCardDbRaw, handleLevel0File, setFilename, filename, downloadUpdatedDatabase } = useGameDatasetContext();
   const [loading, setLoading] = useState(false);
 
   const fetchExistingFile = useCallback((fileUrl: string, filename: string, onClose: () => void) => {
@@ -16,18 +16,21 @@ export const GameDatasetUpload = () => {
       })
       .then(() => onClose())
       .catch(e => { window.alert(e) })
-      .finally(() => setLoading(true))
+      .finally(() => setLoading(false))
   }, [setCardDbRaw, setFilename]);
 
   return (
-    <DialogControl buttonText={!!downloadUpdatedDatabase ? 'Change File' : 'Upload File'}>
-      { onClose => (
-        <>
-          <input type="file" onChange={e => handleLevel0File(e, onClose)} />
-          <button disabled={loading} onClick={() => fetchExistingFile('/assets/sourceData/level0', 'level0', onClose)}>Use iOS 1.9.0</button>
-          <button disabled={loading}  onClick={() => fetchExistingFile('/assets/sourceData/level0.split4', 'level0.split4', onClose)}>Use Android 1.9.0</button>
-        </>
-      )}
-    </DialogControl>
+    <>{' '}
+      <DialogControl buttonText={!!downloadUpdatedDatabase ? 'Change File' : 'Upload File'}>
+        { onClose => (
+          <>
+            <input type="file" onChange={e => handleLevel0File(e, onClose)} />
+            <button disabled={loading} onClick={() => fetchExistingFile('/assets/sourceData/level0', 'level0', onClose)}>Use iOS 1.9.0</button>
+            <button disabled={loading}  onClick={() => fetchExistingFile('/assets/sourceData/level0.split4', 'level0.split4', onClose)}>Use Android 1.9.0</button>
+          </>
+        )}
+      </DialogControl>
+      {filename || ' (a level0 asset file is required to modify the database)'}
+    </>
   )
 }

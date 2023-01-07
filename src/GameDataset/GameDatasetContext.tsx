@@ -3,7 +3,6 @@ import { getMinifiedSwap, Swapped } from "../Swap/SwapContext";
 import { downloadFile, downloadSwapData } from "../tools/download";
 import { changeCardRelation } from "../tools/modifiers";
 import { buildDataBase, databaseParser, DBData } from "../tools/parseDatabase";
-import { GameDatasetUpload } from "./GameDatasetUpload";
 
 type GameDatasetContextType = {
   filename: string;
@@ -86,7 +85,6 @@ export const GameDatasetContextProvider = (props: { children: ReactNode }) => {
   const value = useGameDatasetValues();
   return (
     <GameDatasetContext.Provider value={value}>
-      <GameDatasetUpload />
       {props.children}
     </GameDatasetContext.Provider>
   );

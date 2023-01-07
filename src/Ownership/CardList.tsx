@@ -7,6 +7,7 @@ import cardDb from '../cardDb.json';
 import { CardSwap } from '../Swap/CardSwap';
 import { filters, useCardFilters } from '../CardDbContext';
 import { DialogControl } from '../components';
+import { ProcessSwap } from '../Swap/ProcessSwap';
 
 export type ListProps = {
   action: CollectionStage,
@@ -237,10 +238,11 @@ const CardList = () => {
         )}}
       </DialogControl>
     )}
+    <p>Filters:</p>
     <ul>
       {['TypeRef', 'Power', 'Item Type', 'GenreRef', 'Season', 'Source CID'].map((v) => (
 
-        <li>{v}:
+        <li><strong>{v}</strong>:
           { filters[v].map(f => {
             const nameFor = `filter-${v.replace(/ /g, '-')}-${f}`
             return (
@@ -266,7 +268,7 @@ const CardList = () => {
               <ToggleAll filteredCards={filteredCards} stage={stage as CollectionStage} />
             </th>
           ))}
-          { canSwap && <th>Swap</th>}
+          { canSwap && <th>Swap <ProcessSwap /></th>}
         </tr>
       </thead>
       <tbody>

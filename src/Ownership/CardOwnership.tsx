@@ -4,13 +4,19 @@ import CardList from "./CardList";
 import { SwapContextProvider } from "../Swap/SwapContext";
 import { PlaylistList } from "./PlaylistList";
 import { ProcessSwap } from "../Swap/ProcessSwap";
+import { GameDatasetUpload } from "../GameDataset/GameDatasetUpload";
 
 const CardOwnership = (props: { view: 'card' | 'playlist' }) => {
   return (
     <>
-      <ProcessSwap />
       { props.view === 'playlist'
-        ? <PlaylistList />
+        ? (
+          <>
+
+            <ProcessSwap />
+            <PlaylistList />
+          </>
+        )
         : <CardList />
       }
     </>
@@ -59,40 +65,50 @@ export const CardOwnershipWrapper = () => {
 
   return (
     <>
-      <select value={collectionId} onChange={e => {
-        if (collectionIds.includes(e.target.value)) {
-          setCollectionId(e.target.value)
-        }
-      }}>
-        {collectionIds.map(c => {
-          return (
-            <option value={c} disabled={c === collectionId}>{c}</option>
-          )
-        })}
-      </select>
-      <button
-        onClick={() => {
-          let name = window.prompt('Please give the collection a name');
-          if (name) {
-            setCollectionId(name);
-          } else {
-            window.alert('collection already exists')
+      <div className="menuBlock">
+        <span>Database file: </span>
+        <GameDatasetUpload />
+      </div>
+      <div className="menuBlock">
+        <span>Collection: </span>
+        <select value={collectionId} onChange={e => {
+          if (collectionIds.includes(e.target.value)) {
+            setCollectionId(e.target.value)
           }
-        }}>New Collection</button>
-      <button disabled={collectionIds.length < 2} onClick={() => {
-        // TODO tidy this mess up
-        if (!!collectionId && collectionIds.length > 1 && window.confirm('Are you sure you want to delete this collection')) {
-          localStorage.removeItem(`card-${collectionId}`);
-          const newList = collectionIds.filter(c => c !== collectionId);
-          localStorage.setItem('collections', JSON.stringify(newList));
-          setCollectionIds(newList)
-          setCollectionId(newList[0]);
-        }
-      }}>Delete Collection</button>
-      <select onChange={(e) => setView(e.target.value as any)} value={view}>
-        <option value="card">Cards</option>
-        <option value="playlist">Playlist</option>
-      </select>
+        }}>
+          {collectionIds.map(c => {
+            return (
+              <option value={c} disabled={c === collectionId}>{c}</option>
+            )
+          })}
+        </select>
+        <button
+          onClick={() => {
+            let name = window.prompt('Please give the collection a name');
+            if (name) {
+              setCollectionId(name);
+            } else {
+              window.alert('collection already exists')
+            }
+          }}>New Collection</button>
+        <button disabled={collectionIds.length < 2} onClick={() => {
+          // TODO tidy this mess up
+          if (!!collectionId && collectionIds.length > 1 && window.confirm('Are you sure you want to delete this collection')) {
+            localStorage.removeItem(`card-${collectionId}`);
+            const newList = collectionIds.filter(c => c !== collectionId);
+            localStorage.setItem('collections', JSON.stringify(newList));
+            setCollectionIds(newList)
+            setCollectionId(newList[0]);
+          }
+        }}>Delete Collection</button>
+      </div>
+      <div className="menuBlock">
+        <span>View: </span>
+        <select onChange={(e) => setView(e.target.value as any)} value={view}>
+          <option value="card">Cards</option>
+          <option value="playlist">Playlist</option>
+        </select>
+      </div>
       <CollectionContextProvider collectionId={collectionId}>
         <SwapContextProvider>
           <CardOwnership view={view}/>
