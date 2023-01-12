@@ -5,11 +5,13 @@ import { infoColumns } from "../Ownership/CardList";
 import { CardKey } from "../datasets";
 import { useGameDatasetContext } from "../GameDataset/GameDatasetContext";
 import { downloadCardPrintsheet } from "../tools/download";
+import { useCollectionContext } from "../Ownership/CollectionContext";
 
-export const ProcessSwap = () => {
+export const ProcessSwap = (props: { allowPrintsheet?: boolean }) => {
   const { swapped } = useSwapContext();
   const { downloadUpdatedDatabase } = useGameDatasetContext();
-  const minifiedSwap = useMemo(() => getMinifiedSwap(swapped), [swapped]);
+  const { collection } = useCollectionContext();
+  const minifiedSwap = useMemo(() => getMinifiedSwap(swapped, collection), [swapped, collection]);
   const swapCount = Object.keys(swapped).length;
   const [downloadTime, setDownloadTime] = useState<number | null>(null);
 
@@ -39,12 +41,14 @@ export const ProcessSwap = () => {
             }}
             // disabled={!!downloadTime}
           >Download Swapped DB</button>
-          <button
-            onClick={() => {
-              downloadCardPrintsheet(Object.keys(minifiedSwap) as CardKey[], Object.values(minifiedSwap))
-            }}
-            disabled={!downloadTime}
-          >Download swap printsheet</button>
+          {props.allowPrintsheet && (
+            <button
+              onClick={() => {
+                downloadCardPrintsheet(Object.keys(minifiedSwap) as CardKey[], Object.values(minifiedSwap), 'swapData' + downloadTime)
+              }}
+              disabled={!downloadTime}
+            >Download swap printsheet</button>
+          )}
           <table>
             <thead>
               {infoColumns.map(v => <th>{v.name}</th>)}

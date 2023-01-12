@@ -1,6 +1,5 @@
 import cardDb from './cardDb.json';
 import playbackDb from './playbackDb.json';
-import { bafflers } from './tools/variables';
 
 export type CardKey = keyof typeof cardDb;
 

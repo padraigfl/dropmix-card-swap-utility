@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 import { CardKey } from "../datasets";
+import { CardCollection } from "../Ownership/CollectionContext";
 
 export type OnSwap = ((swap: [CardKey, CardKey]) => void)
 
@@ -13,17 +14,16 @@ export const useSwapContext = () => useContext<SwapContextType>(SwapContext);
 
 export type Swapped = { [k in CardKey]?: CardKey };
 
-export const getMinifiedSwap = (swapValues: Swapped) => {
+export const getMinifiedSwap = (swapValues: Swapped, collection?: CardCollection) => {
   const swapValuesMinified = {
     ...swapValues,
   };
 
   // hacky clearance of correlated values
   (Object.keys(swapValuesMinified) as CardKey[]).forEach(k => {
-    const swapVal = swapValuesMinified[k];
-    if (swapVal && swapValuesMinified[swapVal]) {
-      delete swapValuesMinified[swapVal];
-    };
+    if (collection && !collection[k]?.own) {
+      delete swapValuesMinified[k];
+    }
   });
   return swapValuesMinified;
 }

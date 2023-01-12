@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import cardDb from '../cardDb.json';
 import { PlaylistKey, Playlists } from '../datasets';
+import { downloadCardPrintsheet } from '../tools/download';
 import { playlists } from '../tools/variables';
 import { useSwapContext } from './SwapContext';
 
@@ -8,6 +9,14 @@ export const PlaylistSwap = () => {
   const { onSwap } = useSwapContext();
   const [swappedPlaylists, setSwappedPlaylists] = useState<{ [k in keyof Playlists]?: keyof Playlists}>({});
   const [includeBafflers, setIncludeBafflers] = useState(false);
+
+  const downloadPlaylistSheet = useCallback((playlistName: PlaylistKey) => {
+    const printsheet = [ ...playlists[playlistName].cards ]
+    if (includeBafflers && playlists[playlistName]?.baffler) {
+      printsheet.push(playlists[playlistName]?.baffler!)
+    }
+    downloadCardPrintsheet(printsheet, [], playlistName + (playlists[playlistName].cards.length !== printsheet.length ? '+baffler' : ''));
+  }, [includeBafflers]);
 
   const validPlaylists = useMemo(() => {
     let validPlaylists: string[] = [];
@@ -74,12 +83,15 @@ export const PlaylistSwap = () => {
       <table>
         {validPlaylists.map(p => (
           <tr>
+            <td>
+              <button type="button" onClick={() => downloadPlaylistSheet(p.name)}>
+                Print
+              </button>
+              {p.name}
+              {swappedPlaylists[p.name] && ` -> ${swappedPlaylists[p.name]}`}
+            </td>
             { swappedPlaylists[p.name] && swappedPlaylists[p.name] !== p.name
-              ? <>
-                <td>
-                  {p.name}
-                  {` ->`} {swappedPlaylists[p.name]}
-                </td>
+              ? 
                 <td>
                   <button
                     onClick={() => {
@@ -90,9 +102,7 @@ export const PlaylistSwap = () => {
                     }}
                   >Clear</button>
                 </td>
-              </>
-              : <>
-                <td>{p.name}</td>
+              : 
                 <td>
                   <select onChange={e => onPlaylistSwap(p.name, e.target.value)} value={swappedPlaylists[p.name] || p.name}>
                     {validPlaylists.map(v => (
@@ -102,7 +112,6 @@ export const PlaylistSwap = () => {
                     ))}
                   </select>
                 </td>
-              </>
             }
           </tr>
         ))}

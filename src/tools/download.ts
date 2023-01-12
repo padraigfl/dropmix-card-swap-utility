@@ -25,7 +25,7 @@ export function downloadFile(blob: Blob, name: string) {
   aElement.remove();
 }
 
-export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]){
+export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[], filename: string){
   const images = [];
   for (let i = 0; i < cards.length; i++){
 
@@ -93,7 +93,7 @@ export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]
     }]
   })
   return Packer.toBlob(document).then(blob => {
-    downloadFile(blob, ''+Date.now()+'testfile.docx')
+    downloadFile(blob, filename+'.docx')
   });
 }
 
