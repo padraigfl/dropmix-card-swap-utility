@@ -6,7 +6,6 @@ import { CardKey } from "../datasets";
 import { useGameDatasetContext } from "../GameDataset/GameDatasetContext";
 import { downloadCardPrintsheet } from "../tools/download";
 import { useCollectionContext } from "../Ownership/CollectionContext";
-import { access } from "fs";
 
 export const ProcessSwap = (props: { allowPrintsheet?: boolean; invertPrintSheet?: boolean }) => {
   const { swapped } = useSwapContext();

@@ -59,7 +59,7 @@ const songTitleIdx = 11;
 
 const retainRowSize = (row: string[], operation: number) => {
   const expectedLength = row[songTitleIdx].length + operation;
-  const prevTitle = row[songTitleIdx];
+  // const prevTitle = row[songTitleIdx];
   let hasQuotes = !!row[songTitleIdx].match(/^".*"$/)
   if (hasQuotes) {
     row[songTitleIdx] = row[songTitleIdx].substring(1, row[songTitleIdx].length - 1);
@@ -114,13 +114,12 @@ const retainRowSize = (row: string[], operation: number) => {
 const getCSVString = (csvArrays: string[][]) => csvArrays.map(v => v.join(',')).join('\n')
 
 const getRawDataForCSV = (csvArrays: string[][]) => {
-  const csv = getCSVString(csvArrays);
   const csvCharArray = getCSVString(csvArrays).split('').map(c => c.charCodeAt(0));
   return new Uint8Array(csvCharArray);
 }
 
 export const updateDatabase = (sharedAssets: Uint8Array, swaps: Swapped) => {
-  const comparison = parseAssetsFile(sharedAssets);
+  // const comparison = parseAssetsFile(sharedAssets);
   const parsedAssets = parseAssetsFile(sharedAssets);
   Object.entries(swaps).forEach(([a, b]) => {
     console.log(a, b)
@@ -151,8 +150,8 @@ export const updateDatabase = (sharedAssets: Uint8Array, swaps: Swapped) => {
     }
 
   })
-  const newData = parsedAssets.map(v => v.data.map(_ => _.join(',')).join('\n'))
-  const oldData = comparison.map(v => v.data.map(_ => _.join(',')).join('\n'))
+  // const newData = parsedAssets.map(v => v.data.map(_ => _.join(',')).join('\n'))
+  // const oldData = comparison.map(v => v.data.map(_ => _.join(',')).join('\n'))
 
   const newBinaryFile = new Uint8Array(sharedAssets.length)
   newBinaryFile.set(sharedAssets, 0)
