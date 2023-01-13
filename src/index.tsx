@@ -9,9 +9,8 @@ import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
   {
-    path: '/',
     element: <App />,
-    errorElement: <>Something went wrong and I'm not sure what it was</>,
+    errorElement: <>Something went wrong and I'm not sure what it was <Link to="/">Go home</Link></>,
     children: [
       { path: 'collection', element: <CardOwnershipWrapper /> },
       { path: 'playlist', element: <PlaylistWrapper /> },
@@ -56,7 +55,7 @@ const router = createBrowserRouter([
         </>
       }
     ]
-  }
+  },
 ])
 
 const root = ReactDOM.createRoot(
