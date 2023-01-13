@@ -1,16 +1,21 @@
 ## Guides
 
-** WARNING: Please back up your application and data prior to attempting these updates. If you are not comfortable with any of the tools involved or do not know how to easily back up and restore your data you should not try this process. Ideally try on a device other than your main dropmix device if possible. **
+** WARNING: Please back up your application and data prior to attempting these updates. If you are not comfortable with any of the tools involved or do not know how to easily back up and restore your data you should not try this process. Ideally try on a device other than your main dropmix device if possible.**
 
 Firstly generate a new source database file, for info on finding one within your version of the application see below.
 
 ### Webapp stage
 
 - select a database to modify (either upload or select from available options)
-- select cards/playlists you can use
-- select cards/playlists you want
-- select cards/playlists you can use and want to dispose of
-- from the dropdown options swap between cards, when you apply a swap it will be applied both on the row you've swapped and the row it was swapped with. To cancel either select the default option or hit the cancel button
+- go to either
+  - A: https://dropmix.netlify.app/collection
+    - select cards/playlists you can use
+    - select cards/playlists you want
+    - select cards/playlists you can use and want to dispose of
+  - B: https://dropmix.netlify.app/playlist
+    - select playlists to exchange
+    - for playlists with a baffler you have the option to swap the baffler too (this is probably buggy)
+- from the dropdown options swap between cards/playlists, when you apply a swap it will be applied both on the row you've swapped and the row it was swapped with. To cancel either select the default option or hit the cancel button
 - once some swaps have been applied you can click on the swap database button, which will open a modal and let you download the new database along with a printsheet of the desired swapped cards
 - rename to match the original file name and place it within the application code where relevant (differs for mac and android)
 

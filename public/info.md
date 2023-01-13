@@ -70,3 +70,18 @@ With this in mind I have made an application which allows two swap options:
 3.  produces an optional printable document of the new cards to place in sleeves with the cards you've swapped them with
 
 As the IDs for NFCs are not a uniform length I opted to modify the length of the last copyrightable field to adjust to this. This ensures each row is the same length as it was before (which is probably overengineered as a straight swap should preseve DB length); there's potentially room for a very detailed database modifier in here but it didn't seem worth the time investment and would've made me go insane.
+
+### Possible future work
+
+#### Custom cards
+
+I don't understand how images work but beyond that I know a fair bit of how to make custom cards work.
+
+Due to the complexity of it all I think it would be better for someone to focus on migrating Fuser tracks (custom or official) back to Dropmix. The data structures are extremely similar so I think it should be very possible for someone who wants to do it (I don't).
+
+To get custom cards running you need to modify the card data in the `level0` database to correspond with audio files placed in the card data section. There's quite a lot of undocumented config stuff from there but beyond the power (set in sharedassets0), the rendered text (set in level0) and some core audio details (e.g. initial tempo and pitch) you can control most the stuff from the data folders with little risk of corrupting the app
+
+#### Improved scripting
+
+I think it'd be amazing if someone made a script which works on as many platforms as possible and sideloads the apk and data directly to a person's phone. my `apkinstall.sh` script attempts to achieve this but much better can be done.
+
