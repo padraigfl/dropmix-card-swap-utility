@@ -10,14 +10,17 @@ body {
   left: 0px;
   width: 100vw;
   height: 100vh;
+  max-height: 100vh;
+  overflow: auto;
   background-color: rgba(255, 255, 255, 0.8);
   filter: drop-shadow(0.5);
+  backdrop-filter: blur(2px);
   display: flex;
   align-content: center;
 }
 
 .dialog {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   width: 100%;
 }
 .dialog__close {
@@ -51,4 +54,15 @@ td .img {
 
 .menuBlock {
   margin-bottom: 8px;
+}
+
+.swap-ready {
+  font-weight: bolder;
+  background-color: #eee;
+}
+.swap-ready span {
+  display: none;
+}
+.swap-ready button {
+  border-width: 3px;
 }

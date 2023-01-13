@@ -32,6 +32,7 @@ const filterFields: Columns[] = [
   { key: 'GenreRef', name: 'Genre', filter: (card: Card, genre: string) => {
     return `${card['GenreRef']}`.includes(`genre_${genre}`)
   }, },
+  // TODO this can be the 'Source' field but forgot to include that
   { key: 'Source CID', name: 'Music', filter: (card: Card, prefix: string) => { return card['Source CID'].includes(prefix) }}
   // { key: 'Instrument', name: 'Instrument', filter: (k: Instrument) => card => [instrument 1 to 4].includes(instrument)}
 ]
@@ -266,7 +267,7 @@ const CardList = () => {
               <ToggleAll filteredCards={filteredCards} stage={stage as CollectionStage} />
             </th>
           ))}
-          { canSwap && <th>Swap <ProcessSwap /></th>}
+          { canSwap && <th className={Object.keys(swapped).length ? 'swap-ready' : undefined}><span>Swap </span><ProcessSwap /></th>}
         </tr>
       </thead>
       <tbody>

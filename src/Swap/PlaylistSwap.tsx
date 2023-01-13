@@ -54,6 +54,11 @@ export const PlaylistSwap = () => {
       if (typeof p1 === 'number' || typeof p2 === 'number') {
         return prev;
       }
+      if (p1 === p2) {
+        delete prevFiltered[p1];
+        delete prevFiltered[p2];
+        return { ...prevFiltered };
+      }
       if (p1 && prev[p1]) {
         delete prevFiltered[p1];
       }
@@ -75,6 +80,8 @@ export const PlaylistSwap = () => {
       onSwap([playlists[p1].baffler!, playlists[p2].baffler!]);
     }
   }, [onSwap, includeBafflers]);
+
+  const keys = Date.now();
 
   return (
     <>
@@ -104,11 +111,11 @@ export const PlaylistSwap = () => {
                 </td>
               : 
                 <td>
-                  <select onChange={e => onPlaylistSwap(p.name, e.target.value)} value={swappedPlaylists[p.name] || p.name}>
+                  <select key={keys} onChange={e => onPlaylistSwap(p.name, e.target.value)} value={swappedPlaylists[p.name] || p.name}>
                     {validPlaylists.map(v => (
                       v.name === p.name
-                        ? <option value={v.name} disabled>---</option>
-                        : <option value={v.name} disabled={Object.values(swappedPlaylists).includes(v.name)}>{v.name}</option>
+                        ? <option key={v.name} value={v.name} disabled>---</option>
+                        : <option key={v.name} value={v.name} disabled={Object.values(swappedPlaylists).includes(v.name)}>{v.name}</option>
                     ))}
                   </select>
                 </td>

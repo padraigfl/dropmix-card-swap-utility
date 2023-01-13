@@ -15,14 +15,19 @@ export const useSwapContext = () => useContext<SwapContextType>(SwapContext);
 export type Swapped = { [k in CardKey]?: CardKey };
 
 export const getMinifiedSwap = (swapValues: Swapped, collection?: CardCollection) => {
-  const swapValuesMinified = {
-    ...swapValues,
+  const swapValuesMinified: Swapped = {
   };
 
   // hacky clearance of correlated values
-  (Object.keys(swapValuesMinified) as CardKey[]).forEach(k => {
-    if (collection && !collection[k]?.own) {
-      delete swapValuesMinified[k];
+  (Object.entries(swapValues) as [CardKey, CardKey][]).forEach(([k1, k2]: [CardKey, CardKey]) => {
+    if (!swapValuesMinified[k1] && !swapValuesMinified[k2]) {
+      if (collection && !!collection[k1]?.own) {
+        swapValuesMinified[k1] = k2;
+      } else if (collection && !!collection[k2]?.own) {
+        swapValuesMinified[k2] = k1;
+      } else {
+        swapValuesMinified[k1] = k2;
+      }
     }
   });
   return swapValuesMinified;

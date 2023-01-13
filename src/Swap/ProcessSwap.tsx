@@ -6,8 +6,9 @@ import { CardKey } from "../datasets";
 import { useGameDatasetContext } from "../GameDataset/GameDatasetContext";
 import { downloadCardPrintsheet } from "../tools/download";
 import { useCollectionContext } from "../Ownership/CollectionContext";
+import { access } from "fs";
 
-export const ProcessSwap = (props: { allowPrintsheet?: boolean }) => {
+export const ProcessSwap = (props: { allowPrintsheet?: boolean; invertPrintSheet?: boolean }) => {
   const { swapped } = useSwapContext();
   const { downloadUpdatedDatabase } = useGameDatasetContext();
   const { collection } = useCollectionContext();
@@ -26,6 +27,7 @@ export const ProcessSwap = (props: { allowPrintsheet?: boolean }) => {
             onClick={() => {
               if (!downloadUpdatedDatabase) {
                 alert('please select/upload a raw data set to complete swap process')
+                return;
               }
               const fn = window.prompt('please name fileset');
               try {
@@ -35,16 +37,18 @@ export const ProcessSwap = (props: { allowPrintsheet?: boolean }) => {
                 }
               } catch (e) {
                 console.error(e);
-              } finally {
-                onClose();
+                return;
               }
+              onClose();
             }}
             // disabled={!!downloadTime}
           >Download Swapped DB</button>
           {props.allowPrintsheet && (
             <button
               onClick={() => {
-                downloadCardPrintsheet(Object.keys(minifiedSwap) as CardKey[], Object.values(minifiedSwap), 'swapData' + downloadTime)
+                props.invertPrintSheet
+                  ? downloadCardPrintsheet(Object.values(minifiedSwap), Object.keys(minifiedSwap) as CardKey[], 'swapData' + downloadTime)
+                  : downloadCardPrintsheet(Object.keys(minifiedSwap) as CardKey[], Object.values(minifiedSwap), 'swapData' + downloadTime)
               }}
               disabled={!downloadTime}
             >Download swap printsheet</button>

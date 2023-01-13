@@ -74,7 +74,6 @@ const getDatabase = (db: Uint8Array, startIndex: number, debug?: boolean): DBDat
 
 export const databaseParser = (db: Uint8Array) => {
   const headerStartIndex = db.findIndex((entry, idx) => getDatabaseStartingPoint(db, idx)) - 4;
-  console.log(headerStartIndex)
   const database = getDatabase(db, headerStartIndex);
   return database;
 }

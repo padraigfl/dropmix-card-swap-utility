@@ -13,7 +13,7 @@ const CardOwnership = (props: { view: 'card' | 'playlist' }) => {
         ? (
           <>
 
-            <ProcessSwap />
+            <ProcessSwap allowPrintsheet />
             <PlaylistList />
           </>
         )

@@ -43,6 +43,7 @@ export const PlaylistList = () => {
     Object.keys(playlists).forEach(pl => {
       swapDisabled[pl] = playlists[pl].cards.length !== 15 || playlists[pl].cards.some(c => swappedFlattened.has(c));
     })
+    debugger;
     return swapDisabled;
   }, [swapped])
 
@@ -76,6 +77,7 @@ export const PlaylistList = () => {
 
   const stages = ['own', 'want', 'dispose'] as CollectionStage[];
   console.log(allSwappable)
+
   return <table>
     <thead>
       <tr>
@@ -128,8 +130,12 @@ export const PlaylistList = () => {
                   { Object.keys(playlists).map(v => (
                     playlists[v].cards.length === 15 && ( allSwappable[v].dispose || v === name)
                       ? v === name
-                        ? <option value={name}> ---- </option>
-                        : <option value={v} disabled={cantSwapPlaylist[v]}>{v}</option>
+                        ? <option key={name} value={name}> ---- </option>
+                        : <option
+                            key={name}
+                            value={v}
+                            disabled={cantSwapPlaylist[v]}
+                          >{v}</option>
                       : null
                   ))}
                 </select>

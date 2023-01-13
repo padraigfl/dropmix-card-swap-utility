@@ -11,7 +11,7 @@ const Playlist = () => {
         <GameDatasetUpload />
       </p>
       <p>
-        <ProcessSwap />
+        <ProcessSwap allowPrintsheet={true} invertPrintSheet={true} />
       </p>
       <PlaylistSwap />
     </>
