@@ -1,4 +1,5 @@
-## Guides
+
+## Guides 
 
 ** WARNING: Please back up your application and data prior to attempting these updates. If you are not comfortable with any of the tools involved or do not know how to easily back up and restore your data you should not try this process. Ideally try on a device other than your main dropmix device if possible.**
 
@@ -64,7 +65,7 @@ See possible script based solution in the repo at /scripts/apkmod.sh
 1. Before installing you need to sign the new APK, I used https://github.com/techexpertize/SignApk to achieve this but it may not work for more recent versions of Android
 1. Install on your device
 1. If the install fails you may need to delete the existing version of Dropmix on your device, swapping between multiple modded versions of the app should not have this issue provided they were all signed in the same manner
-1. If the server is down you will need to copy the obb and data files from an archived source into your application before the app will run (/scripts/apkinstall.sh makes efforts to streamline this process)
+1. If the server is down you will need to copy the obb and data files from an archived source into your application before the app will run ([/scripts/apkinstall.sh](https://github.com/padraigfl/dropmix-card-swap-utility/blob/master/scripts/apkmod.sh) makes efforts to streamline this process)
 
 #### Notes
 
@@ -73,6 +74,8 @@ See possible script based solution in the repo at /scripts/apkmod.sh
 ### Scripts
 
 #### `/scripts/apkmod.sh` (for webapp output data)
+
+[Link](https://github.com/padraigfl/dropmix-card-swap-utility/blob/master/scripts/apkmod.sh)
 
 This script builds the modified APK files with updated card databases. To summarise:
 
@@ -96,6 +99,8 @@ Requirements:
 
 
 #### `/scripts/apkinstall.sh`
+
+[Link](https://github.com/padraigfl/dropmix-card-swap-utility/blob/master/scripts/apkInstall.sh)
 
 This script pulls the apk + data file from archive.org and puts it onto an android device connected
 

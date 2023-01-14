@@ -5,9 +5,11 @@ Dropmix is a card game created by Harmonix which uses NFC chips in cards to trig
 1.  The application depends on a server to obtain content and therefore will no longer be operational for new users when the server goes down
 2.  Due to the form factor of the cards, the NFC chips contained within are highly fragile and will inevitably cease to work over time. For later period cards this the combination of their rarity, their resale price and their fragility makes them almost unattainable and practically unusable for most people
 
+The system I've devised focuses on 2 but I have looked somewhat into 1 and think a more experienced Unity modder could potentially resolve it.
+
 ### 1 Server closure
 
-Epic acquired Harmonix in 2022 and subsequently announced the deprecation of numerous live services, hasting the process of preserving the game.
+Epic acquired Harmonix in 2022 and subsequently announced the deprecation of numerous live services, hasting the process of preserving the game as the game relies on servers to populate the application with card data. This mainly consists of the art and music data for each card but may also include some other assets (most concerningly the game's text content seems to have issues that may suggest a server is required for the font)
 
 #### Basic fix:
 
@@ -43,7 +45,27 @@ A less optimal but ultimately easier to achieve solution is to focus on improvin
 
 #### Improving card accessibility via app mods
 
-The NFC chips contain little more than an associated ID which is then referenced to the card database (located within the `level0` unity asset file) to populate the data within the app. The application builds successfully with no issues from basic modifications to this database on two conditions:
+The NFC chips contain little more than an associated ID which is then referenced to the card databases (located within the `level0` and `sharedassets0.assets` unity asset files) to populate the data within the app. The application builds successfully with no issues from basic modifications to this database on these conditions:
+
+- the file remains the exact same size as before, with no surrounding content modified
+- where necessary the prefix 32 bit asset length values are updated (one per table in shareassets0.assets, one per row in level0)
+- the tables can be parsed in the same manner as before
+
+There's probably more advanced mod work that could work around these constraints but I didn't want to make it harder on myself than necessary.
+
+##### sharedassets0.assets
+
+This asset file contains 3 comma separated tables (season 1, season 2 and promo cards) which contain data relating to the card, most importantly:
+
+- The row in the level0 table to refer to when playing audio and displaying card info (e.g. name, song title, copyright)
+- The power of the card (I believe this dictates how loud it plays too but that may be handled by level0)
+
+Other data included in this file includes the various achievements within the app; in some earlier versions of the APK (I think either 1.8.1 or 1.8.3) you can find information about unreleased cards from season 2 so it may be possible to unearth unreleased cards with some of this data if you can figure out either the CTI or some way to pull the data from the server.
+
+You can get this file via:
+
+*   iOS/M1: `/DropMix.app/WrappedBundle/Data/sharedassets0.assets`
+*   Android: Decompile apk; `/assets/bin/Data/sharedassets0.assets.split194` (for v1.9.0; this will likely be located elsewhere on another version and potentially may be spread across two divisions)
 
 ##### level0
 
@@ -54,7 +76,7 @@ This asset file contains a comma separated table with the following quirks:
 3.  The last column (copyright info) may contain commas
 4.  Each row contains a newline character at the end in Android (but not on iOS)
 
-Each card's ID is used to reference the data in this table.
+This data determines how cards are treated and rendered within the audio player aspect of the application (with the exception card power, which may be handled in sharedassets0.assets). For creating custom cards the bulk of work would be done within this table and editing the card asset files themselves.
 
 You can get this file via:
 
@@ -67,21 +89,54 @@ With this in mind I have made an application which allows two swap options:
 
 1.  swap playlists in their entirety
 2.  build up a list of cards owned in a set, select ones you own but don't want and the ones you don't have that you do want, then either manually or dynamically swap the cards
-3.  produces an optional printable document of the new cards to place in sleeves with the cards you've swapped them with
+3.  produces an optional printable document of the new cards to place in sleeves with the cards you've swapped them with [buggy at the moment]
 
-As the IDs for NFCs are not a uniform length I opted to modify the length of the last copyrightable field to adjust to this. This ensures each row is the same length as it was before (which is probably overengineered as a straight swap should preseve DB length); there's potentially room for a very detailed database modifier in here but it didn't seem worth the time investment and would've made me go insane.
+I initially worked with `level0`; as the IDs for NFCs are not a uniform length I opted to modify the length of the last copyrightable field to adjust to this. This ensures each row is the same length as it was before (which is probably overengineered as a straight swap should preseve DB length); there's potentially room for a very detailed database modifier in here but it didn't seem worth the time investment and would've made me go insane.
+
+However, having some issues around Power values with level0, I switched to modifying `sharedassets0.assets`; this file does not grant the leeway of the massive copyright text field to modify so I instead mangle the (seemingly unused) track title data. The level0 modification tools still remain on the repo if they may serve some use in the future for someone.
 
 ### Possible future work
+
+Spitballing here, some things are tied to the webapp specifically but some are more about long term preservation of the application.
+
+#### Utilise extra card data for sorting/filtering
+
+- instruments
+- bars of music on card
+- playlist
+- select all limited to currently filtered selection
+
+#### Dynamic card swap systems
+
+As the user can outline which cards they want to get rid of and which they want, they could potentially let this process automatic swaps such as the following:
+
+- matching power levels
+- matching card types
+- matching instruments
+- prioritisation level of swaps by types (e.g. prioritise receiving wilds and getting rid of HMX or FX)
+- prioritisation of unlicensed cards (for playing over streams)
 
 #### Custom cards
 
 I don't understand how images work but beyond that I know a fair bit of how to make custom cards work.
 
 Due to the complexity of it all I think it would be better for someone to focus on migrating Fuser tracks (custom or official) back to Dropmix. The data structures are extremely similar so I think it should be very possible for someone who wants to do it (I don't).
+The _one_ exception to this issue of work vs reward would be making some unlicensed Wild cards; I think it'd be really cool if someone built up a few unlicensed wild cards to swap the starter wild cards with. Beyond that I assume it's okay to play with the Harmonix made tracks so that's the one barrier from it being streamable as far as I can see.
 
-To get custom cards running you need to modify the card data in the `level0` database to correspond with audio files placed in the card data section. There's quite a lot of undocumented config stuff from there but beyond the power (set in sharedassets0), the rendered text (set in level0) and some core audio details (e.g. initial tempo and pitch) you can control most the stuff from the data folders with little risk of corrupting the app
+To get custom cards running you need to modify the card data in the `level0` database to correspond with audio files placed in the card data section (`/android/data/com.hasbro.dropmix/Data/Documents/CardAssets/` and `~/Library/Containers/[UUID]/Data/Documents/CardAssets/`). There's quite a lot of undocumented config stuff from there but beyond the power (set in sharedassets0), the rendered text (set in level0) and some core audio details (e.g. initial tempo and pitch) you can control most the stuff from the data folders with little risk of corrupting the app
 
 #### Improved scripting
 
-I think it'd be amazing if someone made a script which works on as many platforms as possible and sideloads the apk and data directly to a person's phone. my `apkinstall.sh` script attempts to achieve this but much better can be done.
+I think it'd be amazing if someone made a script which works on as many platforms as possible and sideloads the apk and data directly to a person's phone. my [`apkinstall.sh`](https://github.com/padraigfl/dropmix-card-swap-utility/blob/master/scripts/apkInstall.sh) script attempts to achieve this but much better can be done.
 
+
+#### A wiki for app preservation
+
+Currently there's no centralised location for any information around how to use the app beyond some extremely good google sheets pages. With both the reddit and discord being ran by Harmonix discussion around such things was heavily stifled. There's already a lot of lost information around how the NFC protocol works (broken links on reddit posts) so it'd be good for it all to be collected somewhere and allow others to add in what they know where possible.
+
+Some things I could imagine being very useful to have all in the one place:
+
+- Info for running on all compatible devices (including an issues log around various versions of OSes)
+- Possible solutions for cards that aren't working (heat gun, wireless charger, etc)
+- Efforts around modding both Dropmix and Fuser and known similarities between the two
+- Known projects around the application (e.g. I think someone figured out a way to play online?)
