@@ -127,12 +127,12 @@ export const PlaylistList = () => {
             : (allSwappable[name].want === 15 || allSwappable.dispose === 15)
               ? (
                 <select onChange={e => onPlaylistSwap(name, e.target.value)} value={swappedPlaylists[name] || name}>
-                  { Object.keys(playlists).map(v => (
+                  { Array.from(new Set(Object.keys(playlists))).map((v, idx) => (
                     playlists[v].cards.length === 15 && ( allSwappable[v].dispose || v === name)
                       ? v === name
-                        ? <option key={name} value={name}> ---- </option>
+                        ? <option key={name + idx} value={name}> ---- </option>
                         : <option
-                            key={name}
+                            key={name + idx}
                             value={v}
                             disabled={cantSwapPlaylist[v]}
                           >{v}</option>
