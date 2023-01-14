@@ -26,6 +26,7 @@ const router = createBrowserRouter([
           </ol>
           <p>For a more detailed breakdown of how this website came to be and it's users, view the <Link to="/info">/info</Link> page (to be completed)</p>
           <p>For guides on how to use this website, please check out the <Link to="/guide">/guide</Link> section</p>
+          <p>For issues with the application or the scripts you can log them at <a href="https://github.com/padraigfl/dropmix-card-swap-utility" target="_blank" rel="noopener noreferrer">the github repo</a></p>
           <p>
             If you've found something here useful and would like to show some gratitude, please consider some of the following:
           </p>
@@ -34,9 +35,11 @@ const router = createBrowserRouter([
             <li>Sending me some of the cards I don't have; (currently I only have the starter decks, derby, mirrors, ouroboros, astro and discovery series 1 & 2; would take a duplicate of the hall and oates one or a full starter deck too)</li>
             <li>Viewing my <Link to="/about-me">/about-me</Link> page to check out some other things I've done</li>
             <li><a href="https://www.buymeacoffee.com/padraig" target="_blank" rel="noreferrer">buymeacofffee</a></li>
+            <li>Helping me with the <a href="https://github.com/padraigfl/dropmix-card-swap-utility#legalese" target="_blank" rel="noopener noreferrer">legal stuff</a> around this repo and site, at the moment I'm, assuming everyone involved would actively be happy someone is trying to ensure their massive amount of work and the remaining electronic waste can still be of some use</li>
           </ul>
+          <p>I don't have any clear easy way to get in touch with me right now, but if you <a href="https://www.reddit.com/user/padraigfl" target="_blank" rel="noopener noreferrer">DM my reddit</a> or you provide me some contact details for you I can get in touch. Should be able to reply to bits of info on there or the Discord.</p>
           <p>Apologies for the low res video, but here is a quick run through of how easy it was to swap between multiple APKs modded using the <Link to="/guide#scripts">scripts</Link> and swap tools I've up here</p>
-          <video src="/assets/demonstration.mp4" controls style={{ maxWidth: '100%', width: 540 }}/>
+          <video src="/assets/demonstration.mp4" controls style={{ maxWidth: '100%', width: 540 }} />
         </>
       ) },
       { path: 'info', element: <MarkdownLoader file="/info.md" />
