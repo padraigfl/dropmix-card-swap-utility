@@ -28,25 +28,30 @@ export function downloadFile(blob: Blob, name: string) {
 export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[], filename: string){
   const images = [];
   for (let i = 0; i < cards.length; i++){
-
-    const newImage = await new Promise<{ height: number, width: number, arrayBuffer: ArrayBuffer, name: CardKey, alt: string}>(res => 
-      setTimeout(() => {
-        window.fetch(`/assets/cards/${cards[i]}.jpeg`)
-        .then(res => res.arrayBuffer())
-        .then(async ab => {
-          const imgBlob = new Blob([new Uint8Array(ab)]);
-          let { height, width } = await getImageSizeFromBlob(imgBlob);
-          res({
-            height,
-            width,
-            arrayBuffer: ab,
-            name: cards[i],
-            alt: altTags?.[i] ? `${cards[i]} swapped for ${altTags[i]}` : cards[i],
+    try {
+      const newImage = await new Promise<{ height: number, width: number, arrayBuffer: ArrayBuffer, name: CardKey, alt: string}>(res => 
+        setTimeout(() => {
+          window.fetch(`/assets/images/print/card_${cards[i]}.png.jpeg`)
+          .then(res => res.arrayBuffer())
+          .then(async ab => {
+            const imgBlob = new Blob([new Uint8Array(ab)]);
+            let { height, width } = await getImageSizeFromBlob(imgBlob);
+            res({
+              height,
+              width,
+              arrayBuffer: ab,
+              name: cards[i],
+              alt: altTags?.[i] ? `${cards[i]} swapped for ${altTags[i]}` : cards[i],
+            })
           })
-        })
-      }, 100)
-    )
-    images.push(newImage);
+        }, 100)
+      )
+      images.push(newImage);
+    } catch (e) {
+      alert(e);
+      return;
+    }
+
   }
   // const groupedImages = [] as any[];
   // images.forEach((i, idx) => {
@@ -64,10 +69,10 @@ export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]
             // orientation: PageOrientation.LANDSCAPE,
           },
           margin: {
-            top: 400,
-            bottom: 400,
-            left: 400,
-            right: 400,
+            top: 500,
+            bottom: 500,
+            left: 500,
+            right: 500,
           },
         },
       },
@@ -80,14 +85,23 @@ export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]
             }
             return new ImageRun({
               data: v.arrayBuffer,
-              transformation: { width: v.width / 2.4 , height: v.height / 2.4 },
+              transformation: { width: (v.width * 10) / 29.67 , height: (v.height * 10) / 29.67 },
+              // transformation: { width: 239.298955173576, height: 335.6926188068756 },
               altText: {
                 name: v.name,
                 description: v.alt,
                 title: v.name,
               }
             })
-          })
+          }),
+          spacing: {
+            // // TODO resolve whitespace between rows of cards
+            // line: 0,
+            // lineRule: LineRuleType.EXACT,
+            // beforeAutoSpacing: false,
+            // afterAutoSpacing: false,
+
+          }
         })
       ]
     }]

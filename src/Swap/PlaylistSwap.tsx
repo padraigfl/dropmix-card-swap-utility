@@ -9,13 +9,17 @@ export const PlaylistSwap = () => {
   const { onSwap } = useSwapContext();
   const [swappedPlaylists, setSwappedPlaylists] = useState<{ [k in keyof Playlists]?: keyof Playlists}>({});
   const [includeBafflers, setIncludeBafflers] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const downloadPlaylistSheet = useCallback((playlistName: PlaylistKey) => {
+    setIsLoading(true)
     const printsheet = [ ...playlists[playlistName].cards ]
     if (includeBafflers && playlists[playlistName]?.baffler) {
       printsheet.push(playlists[playlistName]?.baffler!)
     }
-    downloadCardPrintsheet(printsheet, [], playlistName + (playlists[playlistName].cards.length !== printsheet.length ? '+baffler' : ''));
+    downloadCardPrintsheet(printsheet, [], playlistName + (playlists[playlistName].cards.length !== printsheet.length ? '+baffler' : ''))
+      .catch((e) => { alert('Printsheet download failed: ' + e.toString())})
+      .finally(() => setIsLoading(false));
   }, [includeBafflers]);
 
   const validPlaylists = useMemo(() => {
@@ -123,6 +127,7 @@ export const PlaylistSwap = () => {
           </tr>
         ))}
       </table>
+      { isLoading && <div className="loading-overlay">Downloading printsheet...</div>}
     </>
   )
 }

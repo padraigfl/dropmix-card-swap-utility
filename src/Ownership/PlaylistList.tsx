@@ -43,7 +43,6 @@ export const PlaylistList = () => {
     Object.keys(playlists).forEach(pl => {
       swapDisabled[pl] = playlists[pl].cards.length !== 15 || playlists[pl].cards.some(c => swappedFlattened.has(c));
     })
-    debugger;
     return swapDisabled;
   }, [swapped])
 

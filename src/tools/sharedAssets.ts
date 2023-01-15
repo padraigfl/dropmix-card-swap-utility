@@ -58,7 +58,7 @@ const powerIdx = 5;
 const songTitleIdx = 11;
 
 const retainRowSize = (row: string[], operation: number) => {
-  const expectedLength = row[songTitleIdx].length + operation;
+  // const expectedLength = row[songTitleIdx].length + operation;
   // const prevTitle = row[songTitleIdx];
   let hasQuotes = !!row[songTitleIdx].match(/^".*"$/)
   if (hasQuotes) {
@@ -75,9 +75,9 @@ const retainRowSize = (row: string[], operation: number) => {
   if (hasQuotes) {
     row[songTitleIdx] = `"${row[songTitleIdx]}"`
   }
-  if (row[songTitleIdx].length !== expectedLength) {
-    debugger;
-  }
+  // if (row[songTitleIdx].length !== expectedLength) {
+  //   debugger;
+  // }
   // if (operation > 0) {
   //   const targetSongTitleLength = row[songTitleIdx].length + operation + (hasQuotes ? 2 : 0)
   //   for (let i = 0; i < operation; i++) {
@@ -102,7 +102,6 @@ const retainRowSize = (row: string[], operation: number) => {
   //     }
   //     i++
   //   }
-  //   debugger
   //   row[songTitleIdx] = row[songTitleIdx].substring(0, targetSongTitleLength);
   //   if (hasQuotes) {
   //     row[songTitleIdx] = `"${row[songTitleIdx]}"`

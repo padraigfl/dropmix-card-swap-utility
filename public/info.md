@@ -140,3 +140,9 @@ Some things I could imagine being very useful to have all in the one place:
 - Possible solutions for cards that aren't working (heat gun, wireless charger, etc)
 - Efforts around modding both Dropmix and Fuser and known similarities between the two
 - Known projects around the application (e.g. I think someone figured out a way to play online?)
+
+#### How much of this could be bundled into an electron app?
+
+Could the modifications, unpacking, repacking and signing all be bundled into an electron app? That would be a one stop shop solution for modifying the apk which would absolutely rule.
+
+As this is a React based website it would be quite easy to retrofit.

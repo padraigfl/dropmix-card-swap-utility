@@ -77,25 +77,26 @@ See possible script based solution in the repo at /scripts/apkmod.sh
 
 [Link](https://github.com/padraigfl/dropmix-card-swap-utility/blob/master/scripts/apkmod.sh)
 
-This script builds the modified APK files with updated card databases. To summarise:
-
-- unpacks an existing APK
-- checks a directory for modified files, any which match the size of the one within the unpacked app directory will be added to the app
-- repacks APK with modified files
-- signs the APK so it installs on android devices (note: if your existing version of the app is not signed in the same manner the new version will not install so it's recommended to make a re-signed version of the original application)
-- outputs the signed APKs to a new directory where the script was ran from
+This script builds the modified APK files with updated card databases.
 
 To run: `./scripts/apkmod.sh [arg1] [arg2] [arg3]`
 arg1 = directory of apk to mod
-arg2 = directory containing modified sharedassets files
+arg2 = directory containing modified sharedassets file(s)
 arg3 = directory of SignAPK
 
+Steps of script
+
+- unpacks an existing APK (arg1)
+- checks a directory (arg2) for modified files, any which match the size of the one within the unpacked app directory will be added to the app
+- repacks APK with modified files
+- signs the APK (located in path from arg3) so it installs on android devices (note: if your existing version of the app is not signed in the same manner the new version will not install so it's recommended to make a re-signed version of the original application)
+- outputs the signed APKs to a new directory where the script was ran from
 
 Requirements:
 
-- `https://github.com/techexpertize/SignApk`: for signing the new version of the app
+- `https://github.com/techexpertize/SignApk`: for signing the new version of the app (this approach does not work for more recent versions of android)
 - Java 8: The above signing repo relies on Java 8, would appreciate someone to update this with a newer equivalent which works
-- updated asset files (build using the app)
+- updated asset files (build using the website)
 
 
 #### `/scripts/apkinstall.sh`
@@ -103,6 +104,15 @@ Requirements:
 [Link](https://github.com/padraigfl/dropmix-card-swap-utility/blob/master/scripts/apkInstall.sh)
 
 This script pulls the apk + data file from archive.org and puts it onto an android device connected
+
+Steps of script:
+
+- Validates a device is connected via adb
+- Downloads the archive.org package of dropmix and card data
+- unzips the package
+- uninstalls dropmix on device (if any)
+- Installs version of dropmix from zip file to connected device
+- Pushes data files from zip file onto android device
 
 Requirements:
 
