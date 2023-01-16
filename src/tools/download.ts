@@ -69,7 +69,7 @@ export async function downloadCardPrintsheet(cards: CardKey[], altTags: string[]
             // orientation: PageOrientation.LANDSCAPE,
           },
           margin: {
-            top: 500,
+            top: 700,
             bottom: 500,
             left: 500,
             right: 500,
