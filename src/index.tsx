@@ -16,7 +16,12 @@ const router = createBrowserRouter([
       { path: 'playlist', element: <PlaylistWrapper /> },
       { path: '/', element: (
         <>
-          <p><strong>WARNING: Please back up your application and data prior to attempting these updates. If you are not comfortable with any of the tools involved (e.g. java, apktool) or do not know how to easily restore your data you should not try this process.</strong></p>
+          <p><em>
+            Please note that I've shifted to focusing on a Java based desktop application for this work now, you can access it at <a href="https://github.com/padraigfl/Java-Dropmix-Utility-Tool">Github</a> with a downloadable link <a href="https://github.com/padraigfl/Java-Dropmix-Utility-Tool/releases">here</a>.
+            This approach allows for direct patching of the APK file and installing to a connected Android device. For more information read more <Link to="/desktop">here</Link>.
+          </em></p>
+          <hr />
+          <p>WARNING: Please back up your application and data prior to attempting these updates. If you are not comfortable with any of the tools involved (e.g. java, apktool) or do not know how to easily restore your data you should not try this process.</p>
           <p>This website aims to allow users to let their less valuable cards stand in for rarer cards by swapping their corresponding data within the application</p>
           <p>So far I've had very successful results on Android with modded APKs (can switch between variants direct with a reinstall in seconds) and mixed results on M1 (easy when it works but unpredictable)</p>
           <p>The system has two different interfaces for which to handle this:</p>
@@ -42,6 +47,7 @@ const router = createBrowserRouter([
           <video src="/assets/demonstration.mp4" controls style={{ maxWidth: '100%', width: 540 }} />
         </>
       ) },
+      { path: 'desktop', element: <MarkdownLoader file="/desktop.md" /> },
       { path: 'info', element: <MarkdownLoader file="/info.md" />
       },
       { path: 'guide', element: <MarkdownLoader file="/guide.md" /> },
