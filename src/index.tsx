@@ -16,22 +16,22 @@ const router = createBrowserRouter([
       { path: 'playlist', element: <PlaylistWrapper /> },
       { path: '/', element: (
         <>
-          <p><em>
-            Please note that I've shifted to focusing on a Java based desktop application for this work now, you can access it at <a href="https://github.com/padraigfl/Java-Dropmix-Utility-Tool">Github</a> with a downloadable link <a href="https://github.com/padraigfl/Java-Dropmix-Utility-Tool/releases">here</a>.
-            This approach allows for direct patching of the APK file and installing to a connected Android device. For more information read more <Link to="/desktop">here</Link>.
-          </em></p>
-          <hr />
-          <p>WARNING: Please back up your application and data prior to attempting these updates. If you are not comfortable with any of the tools involved (e.g. java, apktool) or do not know how to easily restore your data you should not try this process.</p>
-          <p>This website aims to allow users to let their less valuable cards stand in for rarer cards by swapping their corresponding data within the application</p>
-          <p>So far I've had very successful results on Android with modded APKs (can switch between variants direct with a reinstall in seconds) and mixed results on M1 (easy when it works but unpredictable)</p>
-          <p>The system has two different interfaces for which to handle this:</p>
+          <p>This website aims to cover some details around how Dropmix works and the potential modifications that could be applied to the game to ensure longer term preservation is possible.</p>
+          <p>For a more detailed breakdown of how this website came to be and its uses, view the <Link to="/info">/info</Link> page</p>
+
+          <h3>Java Dropmix Toolkit</h3>
+          <p>The current main focus of my work has been a Java based app which creates modified APK files and has the ability to directly install them to a connected device. more information can be found at <Link to="/desktop">this page</Link>. Initial testing by other users has been fairly positive and there's a lot of room for expansion if people want to make other mods on the asset level. This is currently available on <a href="https://github.com/padraigfl/Java-Dropmix-Toolkit/releases" target="_blank" rel="noopener noreferrer">the project's Github releases section</a></p>
+
+          <h3>Web based mod tools (no longer maintained)</h3>
+          <p>This website also has two different interfaces for which to generate mods for dropmix, but does not apply these assets into a usable APK. For guides on how to use these web based solutions website, please check out the <Link to="/guide">/guide</Link> section. They are:</p>
           <ol>
             <li><Link to="/playlist">/playlist</Link>: A basic playlist swapping tool</li>
             <li><Link to="/collection">/collection</Link>: A more advanced collection building tool with the ability to filter card types and switch between card and playlist views</li>
           </ol>
-          <p>For a more detailed breakdown of how this website came to be and it's users, view the <Link to="/info">/info</Link> page (to be completed)</p>
-          <p>For guides on how to use this website, please check out the <Link to="/guide">/guide</Link> section</p>
-          <p>For issues with the application or the scripts you can log them at <a href="https://github.com/padraigfl/dropmix-card-swap-utility" target="_blank" rel="noopener noreferrer">the github repo</a></p>
+          <p>There are also some systems in place to generate docx files with cards printed off at roughly the exact same size as official cards; this is likely still useful with the java application, I just need to figure out how.</p>
+
+          <h3>Reporting Issues</h3>
+          <p>For issues with the website or the scripts you can log them at <a href="https://github.com/padraigfl/dropmix-card-swap-utility" target="_blank" rel="noopener noreferrer">the github repo</a>, issues around the desktop tool should be logged at <a href="https://github.com/padraigfl/Java-Dropmix-Toolkit/" target="_blank" rel="noopener noreferrer">its github repo</a></p>
           <p>
             If you've found something here useful and would like to show some gratitude, please consider some of the following:
           </p>
@@ -55,7 +55,7 @@ const router = createBrowserRouter([
         path: 'about-me',
         element: <>
           <h2>About Me</h2>
-          <p>Hi, I'm a London-based frontend-developer who would love to make useful tools for other people but tend to get fixated on weird obscure things like this instead.</p>
+          <p>Hi, I'm a London-based web-developer who would love to make useful tools for other people but tend to get fixated on weird obscure things like this instead.</p>
           <p>This project was a great chance for me to get into areas I never thought I would around modding videogames and diving into source code so regardless of whether anyone uses this it was a great experience to have had.</p>
           <p>Some other projects I've done in the past that were neat but ultimately quite rough around the edges include:</p>
           <ul>
