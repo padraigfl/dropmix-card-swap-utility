@@ -20,18 +20,20 @@ const router = createBrowserRouter([
           <p>For a more detailed breakdown of how this website came to be and its uses, view the <Link to="/info">/info</Link> page</p>
 
           <h3>Java Dropmix Toolkit</h3>
-          <p>The current main focus of my work has been a Java based app which creates modified APK files and has the ability to directly install them to a connected device. more information can be found at <Link to="/desktop">this page</Link>. Initial testing by other users has been fairly positive and there's a lot of room for expansion if people want to make other mods on the asset level. This is currently available on <a href="https://github.com/padraigfl/Java-Dropmix-Toolkit/releases" target="_blank" rel="noopener noreferrer">the project's Github releases section</a></p>
+          <p><Link to="/desktop">Full details</Link></p>
+          <p>The current main focus of my work has been a Java based app which creates modified APK files and has the ability to directly install them to a connected device. Initial testing by other users has been fairly positive and there's a lot of room for expansion if people want to make other mods on the asset level.</p>
+          <p>This is currently available to download on <a href="https://github.com/padraigfl/Java-Dropmix-Toolkit/releases" target="_blank" rel="noopener noreferrer">the project's Github releases section</a> and should work on most devices with relatively recent Java support.</p>
 
           <h3>Web based mod tools (no longer maintained)</h3>
           <p>This website also has two different interfaces for which to generate mods for dropmix, but does not apply these assets into a usable APK. For guides on how to use these web based solutions website, please check out the <Link to="/guide">/guide</Link> section. They are:</p>
           <ol>
             <li><Link to="/playlist">/playlist</Link>: A basic playlist swapping tool</li>
             <li><Link to="/collection">/collection</Link>: A more advanced collection building tool with the ability to filter card types and switch between card and playlist views</li>
+            <li>Generation of docx files with cards printed off at roughly the exact same size as official cards; this is likely still useful with the java application, I just need to figure out how.</li>
           </ol>
-          <p>There are also some systems in place to generate docx files with cards printed off at roughly the exact same size as official cards; this is likely still useful with the java application, I just need to figure out how.</p>
 
           <h3>Reporting Issues</h3>
-          <p>For issues with the website or the scripts you can log them at <a href="https://github.com/padraigfl/dropmix-card-swap-utility" target="_blank" rel="noopener noreferrer">the github repo</a>, issues around the desktop tool should be logged at <a href="https://github.com/padraigfl/Java-Dropmix-Toolkit/" target="_blank" rel="noopener noreferrer">its github repo</a></p>
+          <p>For issues with the website or the scripts associated with it you can log them at <a href="https://github.com/padraigfl/dropmix-card-swap-utility" target="_blank" rel="noopener noreferrer">the github repo</a>, issues around the desktop tool should be logged at <a href="https://github.com/padraigfl/Java-Dropmix-Toolkit/" target="_blank" rel="noopener noreferrer">its github repo</a></p>
           <p>
             If you've found something here useful and would like to show some gratitude, please consider some of the following:
           </p>
